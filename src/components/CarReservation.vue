@@ -104,7 +104,7 @@
                         {{ car.bodyType }}
                       </v-card-text>
                       <div class="pa-1">
-                        <p class="work-tools" v-for="item in items" :key="item.title">{{ item.title }} </p>
+                        <p class="work-tools" v-for="item in item" :key="item.title">{{ item.title }} </p>
                       </div>
                     </v-col>
 
@@ -118,34 +118,6 @@
               </v-card>
             </li>
           </ul>
-
-<!--            <div class="flex items-center justify-end text-sm font-semibold">-->
-<!--              <FilterDropdown class="ma-4" :cars="cars" @filter="handleCheckboxFilter"/>-->
-
-<!--            </div>-->
-
-<!--            <div class="bg-white relative border rounded-lg">-->
-<!--              <table class="w-full text-sm text-left text-gray-500">-->
-<!--                <thead class="text-xs text-gray-700 uppercase bg-gray-50">-->
-<!--                <tr>-->
-<!--                  <th class="px-4 py-3">ID-id </th>-->
-<!--                  <th class="px-4 py-3">Assigned to-manufacturer</th>-->
-<!--                  <th class="px-4 py-3">Status-bodyType</th>-->
-<!--                  <th class="px-4 py-3">-->
-<!--                    <span class="sr-only">Actions</span>-->
-<!--                  </th>-->
-<!--                </tr>-->
-<!--                </thead>-->
-<!--              </table>-->
-<!--            </div>-->
-<!--            <table>-->
-<!--              <tr v-for="car in filteredItems" :key="car.id">-->
-<!--                <td class="px-4 py-3 font-medium text-gray-900">{{ car.id }}</td>-->
-<!--                <td class="px-4 py-3 font-medium text-gray-900">{{ car.manufacturer}}</td>-->
-<!--                <td class="px-4 py-3">{{ car.bodyType}}</td>-->
-<!--                <td></td>-->
-<!--              </tr>-->
-<!--            </table>-->
           </v-card>
         </v-card>
       </v-col>
@@ -159,7 +131,7 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import {computed, onMounted, ref} from "vue";
-import CarsService from "@/Services/CarsService";
+import CarService from "@/Services/CarService";
 import FilterDropdown from "@/components/FilterDropdown.vue"; // Assuming you have this service
 
 const date = ref();
@@ -169,7 +141,7 @@ const statusesFilter = ref ([]);
 // Fetch cars when the component is mounted
 onMounted(async () => {
   try {
-    cars.value = await CarsService.getCars();
+    cars.value = await CarService.getCars();
     console.log('Fetched cars:', cars.value);
   } catch (error) {
     console.error('Error fetching cars:', error);

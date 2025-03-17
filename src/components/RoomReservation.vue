@@ -103,117 +103,38 @@
           </div>
 
           <v-card class="bg-white mx-6 all-reservations" style="overflow: auto">
-            <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
-                    <svg-icon type="mdi" :path="mdiChairRolling"
-                              style="color: #27424B; height: 40px; width: 38px"></svg-icon>
-                  </v-col>
-                  <v-col cols="12" sm="6" lg="7">
-                    <v-card-text class="text-subtitle-2 pa-1">
-                      Saltoniškių g. 19, 2 aukštas
-                    </v-card-text>
-                    <v-card-text class="text-h6 pa-1">
-                      Darbo vieta
-                    </v-card-text>
-                    <div class="pa-1">
-                      <p class="work-tools" v-for="item in items" :key="item.title">{{ item.title }} </p>
-                    </div>
-                  </v-col>
 
-                  <v-col cols="12" sm="4" class="text-right my-auto">
-                    <v-btn class="reserve text-white" style="text-transform: none">
-                      <p class="mx-2">Rezervuoti</p>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
+            <ul>
+              <li v-for="room in rooms" :key="room.id">
+                <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
+                  <v-card-text>
+                    <v-row>
+                      <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
+                        <svg-icon type="mdi" :path="mdiChairRolling"
+                                  style="color: #27424B; height: 40px; width: 38px"></svg-icon>
+                      </v-col>
+                      <v-col cols="12" sm="6" lg="7">
+                        <v-card-text class="text-h6 pa-1">
+                          {{ room.name }}
+                        </v-card-text>
+                        <v-card-text class="text-subtitle-2 pa-1">
+                          {{ room.description }}
+                        </v-card-text>
+                        <div class="pa-1">
+                          <p class="work-tools" v-for="item in items" :key="item.title">{{ item.title }} </p>
+                        </div>
+                      </v-col>
 
-            <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
-                    <svg-icon type="mdi" :path="mdiChairRolling"
-                              style="color: #27424B; height: 40px; width: 38px"></svg-icon>
-                  </v-col>
-                  <v-col cols="12" sm="6" lg="7">
-                    <v-card-text class="text-subtitle-2 pa-1">
-                      Saltoniškių g. 19, 2 aukštas
-                    </v-card-text>
-                    <v-card-text class="text-h6 pa-1">
-                      Darbo vieta
-                    </v-card-text>
-                    <div class="pa-1">
-                      <p class="work-tools" v-for="item in items" :key="item.title">{{ item.title }} </p>
-                    </div>
-                  </v-col>
-
-                  <v-col cols="12" sm="4" class="text-right my-auto">
-                    <v-btn class="reserve text-white" style="text-transform: none">
-                      <p class="mx-2">Rezervuoti</p>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
-
-            <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
-                    <svg-icon type="mdi" :path="mdiChairRolling"
-                              style="color: #27424B; height: 40px; width: 38px"></svg-icon>
-                  </v-col>
-                  <v-col cols="12" sm="6" lg="7">
-                    <v-card-text class="text-subtitle-2 pa-1">
-                      Saltoniškių g. 19, 2 aukštas
-                    </v-card-text>
-                    <v-card-text class="text-h6 pa-1">
-                      Darbo vieta
-                    </v-card-text>
-                    <div class="pa-1">
-                      <p class="work-tools" v-for="item in items" :key="item.title">{{ item.title }} </p>
-                    </div>
-                  </v-col>
-
-                  <v-col cols="12" sm="4" class="text-right my-auto">
-                    <v-btn class="reserve text-white" style="text-transform: none">
-                      <p class="mx-2">Rezervuoti</p>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
-
-            <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
-                    <svg-icon type="mdi" :path="mdiChairRolling"
-                              style="color: #27424B; height: 40px; width: 38px"></svg-icon>
-                  </v-col>
-                  <v-col cols="12" sm="6" lg="7">
-                    <v-card-text class="text-subtitle-2 pa-1">
-                      Saltoniškių g. 19, 2 aukštas
-                    </v-card-text>
-                    <v-card-text class="text-h6 pa-1">
-                      Darbo vieta
-                    </v-card-text>
-                    <div class="pa-1">
-                      <p class="work-tools" v-for="item in items" :key="item.title">{{ item.title }} </p>
-                    </div>
-                  </v-col>
-
-                  <v-col cols="12" sm="4" class="text-right my-auto">
-                    <v-btn class="reserve text-white" style="text-transform: none">
-                      <p class="mx-2">Rezervuoti</p>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
+                      <v-col cols="12" sm="4" class="text-right my-auto">
+                        <v-btn class="reserve text-white" style="text-transform: none">
+                          <p class="mx-2">Rezervuoti</p>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+              </li>
+            </ul>
 
           </v-card>
         </v-card>
@@ -227,31 +148,23 @@
 <script setup>
 import {mdiChairRolling} from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
+import RoomService from "@/Services/RoomService";
 
 const date = ref();
+const rooms = ref([]);
 
-const items = ref([
-  {
-    title: 'Kompiuteris',
-    value: 1,
-  },
-  {
-    title: 'Monitorius',
-    value: 2,
+onMounted(async () => {
+  try {
+    rooms.value = await RoomService.GetRooms();
+    console.log('Fetched rooms:', rooms);
+  } catch (error) {
+    console.error('Error fetching rooms:', error);
   }
-]);
-</script>
+});
 
-<script>
-export default {
-  data: () => ({
-    items2: ['Kompiuteris', 'Monitorius', 'Web-kamera'],
-    value: ['Kompiuteris', 'Monitorius', 'Web-kamera'],
-  }),
-}
 </script>
 
 <style scoped>

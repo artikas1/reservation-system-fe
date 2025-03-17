@@ -104,7 +104,7 @@
                           {{ equipment.model }}
                         </v-card-text>
                         <div class="pa-1">
-                          <p class="work-tools" v-for="item in items" :key="item.title">{{ item.title }} </p>
+                          <p class="work-tools" v-for="item in item" :key="item.title">{{ item.title }} </p>
                         </div>
                       </v-col>
 
