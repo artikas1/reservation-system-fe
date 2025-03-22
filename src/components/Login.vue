@@ -14,25 +14,29 @@
                 <v-toolbar-title>Login form</v-toolbar-title>
               </v-toolbar>
               <v-card-text>
-                <v-form>
+                <v-form @submit.prevent="login">
                   <v-text-field
+                    v-model="email"
                     prepend-icon="person"
-                    name="login"
-                    label="Login"
-                    type="text"
+                    name="email"
+                    label="Email"
+                    type="email"
+                    required
                   ></v-text-field>
                   <v-text-field
+                    v-model="password"
                     id="password"
                     prepend-icon="lock"
                     name="password"
                     label="Password"
                     type="password"
+                    required
                   ></v-text-field>
                 </v-form>
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" to="/home">Login</v-btn>
+                <v-btn color="primary" @click="login">Login</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -43,10 +47,38 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'Login',
-  props: {
-    source: String,
+  data() {
+    return {
+      email: '',
+      password: '',
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        // Send a login request to the backend
+        const response = await axios.post('http://localhost:8080/auth/login', {
+          email: this.email,
+          password: this.password,
+        });
+
+        // Extract the JWT token from the response
+        const token = response.data.token;
+
+        // Store the token in local storage
+        localStorage.setItem('jwtToken', token);
+
+        // Redirect to the home page or a protected route
+        this.$router.push('/home');
+      } catch (error) {
+        console.error('Login failed:', error);
+        alert('Login failed. Please check your credentials.');
+      }
+    },
   },
 };
 </script>
@@ -58,5 +90,3 @@ export default {
   min-height: 100%; /* Set a minimum height to cover the entire viewport */
 }
 </style>
-
-

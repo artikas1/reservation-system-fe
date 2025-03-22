@@ -11,15 +11,34 @@
         <p class="text-shades-white text-sm-subtitle-2 text-md-subtitle-1 text-lg-h6">Vardenis Pavardenis</p>
       </div>
 
-      <v-icon icon="mdi-account-outline" class="text-shades-white user-icon"></v-icon>
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn
+            color="primary"
+            v-bind="props"
+          >
+            <v-icon icon="mdi-account-outline" class="text-shades-white user-icon"></v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="(item, index) in items3"
+            :key="index"
+            :value="index"
+            @click="item.action && item.action()"
+          >
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer">
       <div class="section">
         Pagrindinės parinktys
       </div>
+
       <v-card class="mx-auto">
-<!--        <v-list :items="items2"></v-list>-->
         <v-list>
           <v-list-item :to="{name:item.to}" v-for="item in items" :key="item.value" @click="selectItem(item)">
             <v-icon :icon="item.icon" class="mr-2"></v-icon>
@@ -27,11 +46,12 @@
           </v-list-item>
         </v-list>
       </v-card>
+
       <div class="section">
         Aktualūs
       </div>
+
       <v-card class="mx-auto">
-<!--        <v-list :items="items2"></v-list>-->
         <v-list>
           <v-list-item :to="{name:item.to}" v-for="item in items2" :key="item.value" @click="selectItem(item)">
             <v-icon :icon="item.icon" class="mr-2"></v-icon>
@@ -40,6 +60,7 @@
         </v-list>
       </v-card>
     </v-navigation-drawer>
+
     <v-main>
       <router-view/>
     </v-main>
@@ -47,6 +68,9 @@
 </template>
 
 <script setup>
+import { ref, provide } from 'vue';
+
+// Main component logic
 const drawer = ref(null);
 const selectedItem = ref(null);
 
@@ -86,33 +110,27 @@ const items2 = ref([
   },
 ]);
 
+const logout = () => {
+  localStorage.removeItem('jwtToken');
+  window.location.href = '/login';
+};
+
+const items3 = ref([
+  { title: 'Logout', action: logout },
+]);
+
 const selectItem = (item) => {
   selectedItem.value = item;
 };
-</script>
 
-<script>
-import { ref, provide } from 'vue';
-import ChildComponent from '@/components/EquipmentReservation.vue';
+// Additional logic from the second <script> section
+const showChild = ref(false);
 
-export default {
-  components: {
-  },
-  setup() {
-    const showChild = ref(false);
-
-    const toggleChild = () => {
-      showChild.value = !showChild.value;
-    };
-
-    provide('showChild', showChild);
-
-    return {
-      showChild,
-      toggleChild,
-    };
-  },
+const toggleChild = () => {
+  showChild.value = !showChild.value;
 };
+
+provide('showChild', showChild);
 </script>
 
 <style>
