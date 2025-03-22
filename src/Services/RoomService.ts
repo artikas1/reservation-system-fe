@@ -1,11 +1,11 @@
-import axios from 'axios';
+import axiosInstance from './axiosConfig'; // Import the centralized Axios instance
 
-const ROOM_API_BASE_URL = 'http://localhost:8080/room';
+const ROOM_API_BASE_URL = '/room';
 
 class RoomService {
-  async GetRooms() {
+  async getRooms(): Promise<any> {
     try {
-      const response = await axios.get(ROOM_API_BASE_URL);
+      const response = await axiosInstance.get(ROOM_API_BASE_URL);
       console.log('Rooms data received:', response.data);
       return response.data;
     } catch (error) {

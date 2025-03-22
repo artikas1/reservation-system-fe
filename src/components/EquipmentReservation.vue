@@ -103,9 +103,9 @@
                           {{ equipment.manufacturer }}
                           {{ equipment.model }}
                         </v-card-text>
-                        <div class="pa-1">
-                          <p class="work-tools" v-for="item in item" :key="item.title">{{ item.title }} </p>
-                        </div>
+<!--                        <div class="pa-1">-->
+<!--                          <p class="work-tools" v-for="item in item" :key="item.title">{{ item.title }} </p>-->
+<!--                        </div>-->
                       </v-col>
 
                       <v-col cols="12" sm="4" class="text-right my-auto">
@@ -131,12 +131,12 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import {onMounted, ref} from "vue";
-import EquipmentService from "@/Services/EquipmentService";
+import EquipmentService from "@/Services/EquipmentService.ts";
 
 const date = ref();
 const equipment = ref([]);
 
-// Fetch cars when the component is mounted
+// Fetch equipment when the component is mounted
 onMounted( async () => {
   try {
     equipment.value = await EquipmentService.getEquipment();

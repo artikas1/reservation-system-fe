@@ -65,24 +65,24 @@
           </v-row>
         </v-card>
 
-        <v-card color="#F1F1F1">
-          <v-card-text class="text-h6">
-            Papildomi poreikiai
-          </v-card-text>
+<!--        <v-card color="#F1F1F1">-->
+<!--          <v-card-text class="text-h6">-->
+<!--            Papildomi poreikiai-->
+<!--          </v-card-text>-->
 
-          <v-select
-            v-model="value"
-            :items="items2"
-            variant="outlined"
-            class="mx-6 mb-10"
-            chips
-            label="Poreikiai"
-            multiple
-            hide-details="auto"
-            density="compact"
-            style="background-color: white"
-          ></v-select>
-        </v-card>
+<!--          <v-select-->
+<!--            v-model="value"-->
+<!--            :items="items2"-->
+<!--            variant="outlined"-->
+<!--            class="mx-6 mb-10"-->
+<!--            chips-->
+<!--            label="Poreikiai"-->
+<!--            multiple-->
+<!--            hide-details="auto"-->
+<!--            density="compact"-->
+<!--            style="background-color: white"-->
+<!--          ></v-select>-->
+<!--        </v-card>-->
       </v-col>
 
       <v-col cols="12" md="8" class="d-flex flex-column">
@@ -120,9 +120,9 @@
                         <v-card-text class="text-subtitle-2 pa-1">
                           {{ room.description }}
                         </v-card-text>
-                        <div class="pa-1">
-                          <p class="work-tools" v-for="item in items" :key="item.title">{{ item.title }} </p>
-                        </div>
+<!--                        <div class="pa-1">-->
+<!--                          <p class="work-tools" v-for="item in items" :key="item.title">{{ item.title }} </p>-->
+<!--                        </div>-->
                       </v-col>
 
                       <v-col cols="12" sm="4" class="text-right my-auto">
@@ -151,14 +151,14 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import {onMounted, ref} from "vue";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
-import RoomService from "@/Services/RoomService";
+import RoomService from "@/Services/RoomService.ts";
 
 const date = ref();
 const rooms = ref([]);
 
 onMounted(async () => {
   try {
-    rooms.value = await RoomService.GetRooms();
+    rooms.value = await RoomService.getRooms();
     console.log('Fetched rooms:', rooms);
   } catch (error) {
     console.error('Error fetching rooms:', error);

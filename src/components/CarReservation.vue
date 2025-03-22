@@ -103,9 +103,9 @@
                       <v-card-text class="text-subtitle-2 pa-1">
                         {{ car.bodyType }}
                       </v-card-text>
-                      <div class="pa-1">
-                        <p class="work-tools" v-for="item in item" :key="item.title">{{ item.title }} </p>
-                      </div>
+<!--                      <div class="pa-1">-->
+<!--                        <p class="work-tools" v-for="item in item" :key="item.title">{{ item.title }} </p>-->
+<!--                      </div>-->
                     </v-col>
 
                     <v-col cols="12" sm="4" class="text-right my-auto">
@@ -131,7 +131,7 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import {computed, onMounted, ref} from "vue";
-import CarService from "@/Services/CarService";
+import CarService from "@/Services/CarService.ts";
 import FilterDropdown from "@/components/FilterDropdown.vue"; // Assuming you have this service
 
 const date = ref();
