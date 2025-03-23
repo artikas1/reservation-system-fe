@@ -8,7 +8,7 @@
       </router-link>
 
       <div style="font-size: 14px" class="ml-auto">
-        <p class="text-shades-white text-sm-subtitle-2 text-md-subtitle-1 text-lg-h6">Vardenis Pavardenis</p>
+        <p class="text-shades-white text-sm-subtitle-2 text-md-subtitle-1 text-lg-h6">{{ currentUser.firstName }} {{ currentUser.lastName }}</p>
       </div>
 
       <v-menu>
@@ -68,11 +68,21 @@
 </template>
 
 <script setup>
-import { ref, provide } from 'vue';
+import {onMounted, ref, provide } from 'vue';
+import UserService from "@/services/UserService.ts";
 
 // Main component logic
 const drawer = ref(null);
 const selectedItem = ref(null);
+const currentUser = ref({ firstName: '', lastName: '' });
+
+onMounted(async () => {
+  try {
+    currentUser.value = await UserService.getCurrentUser();
+  } catch (error) {
+    console.error('Failed to fetch current user:', error);
+  }
+});
 
 const items = ref([
   {

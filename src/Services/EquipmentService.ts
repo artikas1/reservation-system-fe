@@ -1,6 +1,7 @@
 import axiosInstance from './axiosConfig'; // Import the centralized Axios instance
 
 const EQUIPMENT_API_BASE_URL = '/equipment';
+const EQUIPMENT_RESERVATION_API_URL = '/equipment-reservation/user';
 
 class EquipmentService {
   async getEquipment(): Promise<any> {
@@ -10,6 +11,17 @@ class EquipmentService {
       return response.data;
     } catch (error) {
       console.error('Error fetching equipment:', error);
+      throw error;
+    }
+  }
+
+  async getEquipmentReservations() : Promise<any> {
+    try {
+      const response = await axiosInstance.get(EQUIPMENT_RESERVATION_API_URL);
+      console.log('Equipment reservations received:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching equipment reservations:', error);
       throw error;
     }
   }
