@@ -151,7 +151,7 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import {onMounted, ref} from "vue";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
-import RoomService from "@/Services/RoomService.ts";
+import RoomService from "@/services/RoomService.ts";
 
 const date = ref();
 const rooms = ref([]);

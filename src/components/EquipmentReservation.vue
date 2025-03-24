@@ -131,7 +131,7 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import {onMounted, ref} from "vue";
-import EquipmentService from "@/Services/EquipmentService.ts";
+import EquipmentService from "@/services/EquipmentService.ts";
 
 const date = ref();
 const equipment = ref([]);

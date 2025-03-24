@@ -71,7 +71,7 @@
               <v-btn icon class="me-2">
                 <svg-icon type="mdi" :path="mdiPencilOutline"></svg-icon>
               </v-btn>
-              <v-btn icon>
+              <v-btn icon @click="deleteRoomReservation(room.room.id)">
                 <svg-icon type="mdi" :path="mdiClose"></svg-icon>
               </v-btn>
             </v-col>
@@ -104,7 +104,7 @@
               <v-btn icon class="me-2">
                 <svg-icon type="mdi" :path="mdiPencilOutline"></svg-icon>
               </v-btn>
-              <v-btn icon>
+              <v-btn icon @click="deleteEquipmentReservation(equipment.equipment.id)">
                 <svg-icon type="mdi" :path="mdiClose"></svg-icon>
               </v-btn>
             </v-col>
@@ -139,7 +139,7 @@
               <v-btn icon class="me-2">
                 <svg-icon type="mdi" :path="mdiPencilOutline"></svg-icon>
               </v-btn>
-              <v-btn icon>
+              <v-btn icon @click="deleteCarReservation(car.car.id)">
                 <svg-icon type="mdi" :path="mdiClose"></svg-icon>
               </v-btn>
             </v-col>
@@ -156,9 +156,9 @@
 import {onMounted, ref} from "vue";
 import SvgIcon from '@jamescoyle/vue-icon';
 import {mdiChairRolling, mdiCamera, mdiCar, mdiPencilOutline, mdiClose} from '@mdi/js';
-import RoomService from "@/Services/RoomService.ts";
-import EquipmentService from "@/Services/EquipmentService.ts";
-import CarService from "@/Services/CarService.ts";
+import RoomService from "@/services/RoomService.ts";
+import EquipmentService from "@/services/EquipmentService.ts";
+import CarService from "@/services/CarService.ts";
 import { formatDateTime } from "@/utils/dateFormatter";
 
 const rooms = ref([]);
@@ -174,6 +174,33 @@ onMounted(async () => {
     console.error('Error fetching data:', error);
   }
 });
+
+const deleteRoomReservation = async (id) => {
+  try {
+    await RoomService.deleteReservationByRoomId(id);
+    rooms.value = rooms.value.filter(room => room.room.id !== id);
+  } catch (error) {
+    console.error('Error deleting reservation:', error);
+  }
+};
+
+const deleteEquipmentReservation = async (id) => {
+  try {
+    await EquipmentService.deleteReservationByEquipmentId(id);
+    equipment.value = equipment.value.filter(equipment => equipment.equipment.id !== id);
+  } catch (error) {
+    console.error('Error deleting equipment reservation:', error);
+  }
+};
+
+const deleteCarReservation = async (id) => {
+  try {
+    await CarService.deleteCarReservationByCarId(id);
+    cars.value = cars.value.filter(car => car.car.id !== id);
+  } catch (error) {
+    console.error('Error deleting car reservation:', error);
+  }
+}
 </script>
 
 <style>

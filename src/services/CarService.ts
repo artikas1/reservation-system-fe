@@ -26,6 +26,18 @@ class CarService {
     }
   }
 
+  async deleteCarReservationByCarId(carId: string): Promise<void> {
+    try {
+      await axiosInstance.delete(`car-reservation/delete`, {
+        params: { carId },
+      });
+      console.log('Car reservation deleted successfully');
+    } catch (error) {
+      console.error('Error deleting car reservation:', error);
+      throw error;
+    }
+  }
+
 }
 
 export default new CarService();

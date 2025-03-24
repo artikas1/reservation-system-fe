@@ -25,6 +25,18 @@ class EquipmentService {
       throw error;
     }
   }
+
+  async deleteReservationByEquipmentId(equipmentId: string): Promise<void> {
+    try {
+      await axiosInstance.delete(`equipment-reservation/delete`, {
+        params: { equipmentId },
+      });
+      console.log('Equipment reservation deleted successfully');
+    } catch (error) {
+      console.error('Error deleting equipment reservation:', error);
+      throw error;
+    }
+  }
 }
 
 export default new EquipmentService();

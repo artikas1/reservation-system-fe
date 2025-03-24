@@ -25,6 +25,19 @@ class RoomService {
       throw error;
     }
   }
+
+  async deleteReservationByRoomId(roomId: string): Promise<void> {
+    try {
+      await axiosInstance.delete(`room-reservation/delete`, {
+        params: { roomId },
+      });
+      console.log('Room reservation deleted successfully');
+    } catch (error) {
+      console.error('Error deleting room reservation:', error);
+      throw error;
+    }
+  }
+
 }
 
 export default new RoomService();

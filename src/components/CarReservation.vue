@@ -131,7 +131,7 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import {computed, onMounted, ref} from "vue";
-import CarService from "@/Services/CarService.ts";
+import CarService from "@/services/CarService.ts";
 import FilterDropdown from "@/components/FilterDropdown.vue"; // Assuming you have this service
 
 const date = ref();
