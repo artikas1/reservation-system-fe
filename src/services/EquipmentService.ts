@@ -1,12 +1,12 @@
 import axiosInstance from './axiosConfig'; // Import the centralized Axios instance
 
 const EQUIPMENT_API_BASE_URL = '/equipment';
-const EQUIPMENT_RESERVATION_API_URL = '/equipment-reservation/user';
+const EQUIPMENT_RESERVATION_API_URL = '/equipment-reservation';
 
 class EquipmentService {
   async getEquipment(): Promise<any> {
     try {
-      const response = await axiosInstance.get(EQUIPMENT_API_BASE_URL);
+      const response = await axiosInstance.get(`${EQUIPMENT_API_BASE_URL}/all`);
       console.log('Equipment data received', response.data);
       return response.data;
     } catch (error) {
@@ -15,9 +15,22 @@ class EquipmentService {
     }
   }
 
+  async getAvailableEquipment(startTime: string, endTime: string): Promise<any> {
+    try {
+      const response = await axiosInstance.get(`${EQUIPMENT_API_BASE_URL}/available`, {
+        params: { startTime, endTime },
+      });
+      console.log('Available equipment received:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching available equipment:', error);
+      throw error;
+    }
+  }
+
   async getEquipmentReservations() : Promise<any> {
     try {
-      const response = await axiosInstance.get(EQUIPMENT_RESERVATION_API_URL);
+      const response = await axiosInstance.get(`${EQUIPMENT_RESERVATION_API_URL}/user`);
       console.log('Equipment reservations received:', response.data);
       return response.data;
     } catch (error) {
@@ -26,10 +39,10 @@ class EquipmentService {
     }
   }
 
-  async deleteReservationByEquipmentId(equipmentId: string): Promise<void> {
+  async deleteReservationByEquipmentReservationId(equipmentReservationId: string): Promise<void> {
     try {
       await axiosInstance.delete(`equipment-reservation/delete`, {
-        params: { equipmentId },
+        params: { equipmentReservationId },
       });
       console.log('Equipment reservation deleted successfully');
     } catch (error) {
@@ -37,6 +50,30 @@ class EquipmentService {
       throw error;
     }
   }
+
+  async reserveEquipment(equipmentId: string, startTime: string, endTime: string): Promise<any> {
+    try {
+      const response = await axiosInstance.post(
+        `${EQUIPMENT_RESERVATION_API_URL}/${equipmentId}`,
+        null,
+        {
+          params: {
+            startTime,
+            endTime
+          },
+          headers: {
+            'Accept': '*/*'
+          }
+        }
+      );
+      console.log('Equipment reserved successfuly:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error reserving equipment:', error);
+      throw error;
+    }
+  }
+
 }
 
 export default new EquipmentService();

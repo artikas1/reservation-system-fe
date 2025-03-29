@@ -19,6 +19,7 @@
     "rollup": "^4.36.0",
     "vue": "^3.2.0",
     "vue-router": "^4.2.5",
+    "vue-toastification": "^2.0.0-rc.5",
     "vuetify": "^3.0.0"
   },
   "devDependencies": {

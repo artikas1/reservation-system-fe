@@ -46,22 +46,23 @@
           </v-card-text>
           <v-row class="d-flex mb-10">
 
-            <v-col class="mb-10">
-              <VueDatePicker
-                label="Patalpų tipas"
-                class="pl-6"
-                v-model="date"
-                locale="lt"
-                ></VueDatePicker>
-            </v-col>
+            <VueDatePicker
+              label="Pradžios data"
+              class="rounded mb-5 pl-6 pr-6"
+              v-model="startDate"
+              locale="lt"
+              :enable-time-picker="true"
+              :min-date="new Date()"
+            ></VueDatePicker>
 
-            <v-col>
-              <VueDatePicker
-                class="pr-6"
-                v-model="date"
-                locale="lt"
-              ></VueDatePicker>
-            </v-col>
+            <VueDatePicker
+              label="Pabaigos data"
+              class="rounded mb-10 pl-6 pr-6"
+              v-model="endDate"
+              locale="lt"
+              :enable-time-picker="true"
+              :min-date="startDate"
+            ></VueDatePicker>
 
           </v-row>
         </v-card>
@@ -86,38 +87,46 @@
 
           <v-card class="bg-white mx-6 all-reservations" style="overflow: auto">
 
-            <ul>
-              <li v-for="equipment in equipment" :key="equipment.id">
-                <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
-                  <v-card-text>
-                    <v-row>
-                      <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
-                        <svg-icon type="mdi" :path="mdiCamera"
-                                  style="color: #27424B; height: 40px; width: 38px"></svg-icon>
-                      </v-col>
-                      <v-col cols="12" sm="6" lg="7">
-                        <v-card-text class="text-h6 pa-1">
-                          {{ equipment.name }}
-                        </v-card-text>
-                        <v-card-text class="text-subtitle-2 pa-1">
-                          {{ equipment.manufacturer }}
-                          {{ equipment.model }}
-                        </v-card-text>
-<!--                        <div class="pa-1">-->
-<!--                          <p class="work-tools" v-for="item in item" :key="item.title">{{ item.title }} </p>-->
-<!--                        </div>-->
-                      </v-col>
+            <div v-if="startDate && endDate">
 
-                      <v-col cols="12" sm="4" class="text-right my-auto">
-                        <v-btn class="reserve text-white" style="text-transform: none">
-                          <p class="mx-2">Rezervuoti</p>
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                  </v-card-text>
-                </v-card>
-              </li>
-            </ul>
+              <ul>
+                <li v-for="equipment in equipment" :key="equipment.id">
+                  <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
+                    <v-card-text>
+                      <v-row>
+                        <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
+                          <svg-icon type="mdi" :path="mdiCamera"
+                                    style="color: #27424B; height: 40px; width: 38px"></svg-icon>
+                        </v-col>
+                        <v-col cols="12" sm="6" lg="7">
+                          <v-card-text class="text-h6 pa-1">
+                            {{ equipment.name }}
+                          </v-card-text>
+                          <v-card-text class="text-subtitle-2 pa-1">
+                            {{ equipment.manufacturer }}
+                            {{ equipment.model }}
+                          </v-card-text>
+                          <!--                        <div class="pa-1">-->
+                          <!--                          <p class="work-tools" v-for="item in item" :key="item.title">{{ item.title }} </p>-->
+                          <!--                        </div>-->
+                        </v-col>
+
+                        <v-col cols="12" sm="4" class="text-right my-auto">
+                          <v-btn class="reserve text-white" style="text-transform: none"
+                                 @click="reserveEquipment(equipment.id)">
+                            <p class="mx-2">Rezervuoti</p>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-card-text>
+                  </v-card>
+                </li>
+              </ul>
+            </div>
+
+            <div v-else class="text-center pa-6 text-subtitle-1">
+              Pasirinkite nuo - iki laiką
+            </div>
           </v-card>
         </v-card>
       </v-col>
@@ -125,19 +134,37 @@
   </v-container>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {mdiCamera} from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import EquipmentService from "@/services/EquipmentService.ts";
+import {useToast} from "vue-toastification";
 
-const date = ref();
 const equipment = ref([]);
+const toast = useToast();
+const startDate = ref();
+const endDate = ref();
 
-// Fetch equipment when the component is mounted
-onMounted( async () => {
+watch([startDate, endDate], async ([newStart, newEnd]) => {
+  if (newStart && newEnd) {
+    try {
+      const isoStart = newStart.toISOString();
+      const isoEnd = newEnd.toISOString();
+      equipment.value = await EquipmentService.getAvailableEquipment(isoStart, isoEnd);
+      console.log("Fetched available equipment:", equipment.value);
+    } catch (error) {
+      toast.error("Klaida gaunant iranga");
+      console.error("Error fetching available equipment:", error);
+    }
+  } else {
+    equipment.value = [];
+  }
+});
+
+onMounted(async () => {
   try {
     equipment.value = await EquipmentService.getEquipment();
     console.log('Fetched equipment:', equipment.value);
@@ -145,6 +172,34 @@ onMounted( async () => {
     console.error('Error fetching equipment:', error);
   }
 });
+
+const reserveEquipment = async (equipmentId: string) => {
+  try {
+    if (!startDate.value || !endDate.value) {
+      toast.error('Prasome pasirinkti data ir laika');
+      return;
+    }
+
+    const response = await EquipmentService.reserveEquipment(
+      equipmentId,
+      startDate.value,
+      endDate.value
+    );
+
+    toast.success('Iranga sekmingai rezervuota!');
+    console.log('Reservation created:', response);
+
+    // Refresh the equipment list
+    equipment.value = await EquipmentService.getAvailableEquipment(
+      startDate.value.toISOString(),
+      endDate.value.toISOString()
+    );
+
+  } catch (error) {
+    toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));
+    console.error('Reservation error:', error);
+  }
+};
 
 </script>
 
@@ -177,6 +232,7 @@ onMounted( async () => {
   .right-clm {
     min-height: 720px;
   }
+
   .all-reservations {
     height: 500px;
   }

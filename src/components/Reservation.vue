@@ -71,7 +71,7 @@
               <v-btn icon class="me-2">
                 <svg-icon type="mdi" :path="mdiPencilOutline"></svg-icon>
               </v-btn>
-              <v-btn icon @click="deleteRoomReservation(room.room.id)">
+              <v-btn icon @click="deleteRoomReservation(room.id)">
                 <svg-icon type="mdi" :path="mdiClose"></svg-icon>
               </v-btn>
             </v-col>
@@ -104,7 +104,7 @@
               <v-btn icon class="me-2">
                 <svg-icon type="mdi" :path="mdiPencilOutline"></svg-icon>
               </v-btn>
-              <v-btn icon @click="deleteEquipmentReservation(equipment.equipment.id)">
+              <v-btn icon @click="deleteEquipmentReservation(equipment.id)">
                 <svg-icon type="mdi" :path="mdiClose"></svg-icon>
               </v-btn>
             </v-col>
@@ -139,7 +139,7 @@
               <v-btn icon class="me-2">
                 <svg-icon type="mdi" :path="mdiPencilOutline"></svg-icon>
               </v-btn>
-              <v-btn icon @click="deleteCarReservation(car.car.id)">
+              <v-btn icon @click="deleteCarReservation(car.id)">
                 <svg-icon type="mdi" :path="mdiClose"></svg-icon>
               </v-btn>
             </v-col>
@@ -177,8 +177,8 @@ onMounted(async () => {
 
 const deleteRoomReservation = async (id) => {
   try {
-    await RoomService.deleteReservationByRoomId(id);
-    rooms.value = rooms.value.filter(room => room.room.id !== id);
+    await RoomService.deleteReservationByRoomReservationId(id);
+    rooms.value = rooms.value.filter(room => room.id !== id);
   } catch (error) {
     console.error('Error deleting reservation:', error);
   }
@@ -186,8 +186,8 @@ const deleteRoomReservation = async (id) => {
 
 const deleteEquipmentReservation = async (id) => {
   try {
-    await EquipmentService.deleteReservationByEquipmentId(id);
-    equipment.value = equipment.value.filter(equipment => equipment.equipment.id !== id);
+    await EquipmentService.deleteReservationByEquipmentReservationId(id);
+    equipment.value = equipment.value.filter(equipment => equipment.id !== id);
   } catch (error) {
     console.error('Error deleting equipment reservation:', error);
   }
@@ -195,8 +195,8 @@ const deleteEquipmentReservation = async (id) => {
 
 const deleteCarReservation = async (id) => {
   try {
-    await CarService.deleteCarReservationByCarId(id);
-    cars.value = cars.value.filter(car => car.car.id !== id);
+    await CarService.deleteCarReservationByCarReservationId(id);
+    cars.value = cars.value.filter(car => car.id !== id);
   } catch (error) {
     console.error('Error deleting car reservation:', error);
   }

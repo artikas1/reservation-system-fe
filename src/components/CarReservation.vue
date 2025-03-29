@@ -42,27 +42,28 @@
         </v-card>
 
         <v-card color="#F1F1F1" class="mb-5" style="overflow: unset; z-index: 1">
-          <v-card-text class="text-h6">
+          <v-card-text class="text-h6 mb-3">
             Data ir laikas*
           </v-card-text>
           <v-row class="d-flex">
 
-            <v-col class="mb-10">
-              <VueDatePicker
-                label="Patalpų tipas"
-                class="pl-6"
-                v-model="date"
-                locale="lt"
-              ></VueDatePicker>
-            </v-col>
+            <VueDatePicker
+              label="Pradžios data"
+              class="rounded mb-5 pl-6 pr-6"
+              v-model="startDate"
+              locale="lt"
+              :enable-time-picker="true"
+              :min-date="new Date()"
+            ></VueDatePicker>
 
-            <v-col>
-              <VueDatePicker
-                class="pr-6"
-                v-model="date"
-                locale="lt"
-              ></VueDatePicker>
-            </v-col>
+            <VueDatePicker
+              label="Pabaigos data"
+              class="rounded mb-10 pl-6 pr-6"
+              v-model="endDate"
+              locale="lt"
+              :enable-time-picker="true"
+              :min-date="startDate"
+            ></VueDatePicker>
 
           </v-row>
         </v-card>
@@ -87,58 +88,78 @@
 
           <v-card class="bg-white mx-6 all-reservations" style="overflow: auto">
 
-          <ul>
-            <li v-for="car in cars" :key="car.id">
-              <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
-                <v-card-text>
-                  <v-row>
-                    <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
-                      <svg-icon type="mdi" :path="mdiCarBack"
-                                style="color: #27424B; height: 40px; width: 38px"></svg-icon>
-                    </v-col>
-                    <v-col cols="12" sm="6" lg="7">
-                      <v-card-text class="text-h6 pa-1">
-                        {{ car.manufacturer }} {{ car.model }}
-                      </v-card-text>
-                      <v-card-text class="text-subtitle-2 pa-1">
-                        {{ car.bodyType }}
-                      </v-card-text>
-<!--                      <div class="pa-1">-->
-<!--                        <p class="work-tools" v-for="item in item" :key="item.title">{{ item.title }} </p>-->
-<!--                      </div>-->
-                    </v-col>
+            <div v-if="startDate && endDate">
+              <ul>
+                <li v-for="car in cars" :key="car.id">
+                  <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
+                    <v-card-text>
+                      <v-row>
+                        <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
+                          <svg-icon type="mdi" :path="mdiCarBack"
+                                    style="color: #27424B; height: 40px; width: 38px"></svg-icon>
+                        </v-col>
+                        <v-col cols="12" sm="6" lg="7">
+                          <v-card-text class="text-h6 pa-1">
+                            {{ car.manufacturer }} {{ car.model }}
+                          </v-card-text>
+                          <v-card-text class="text-subtitle-2 pa-1">
+                            {{ car.bodyType }}
+                          </v-card-text>
+                        </v-col>
+                        <v-col cols="12" sm="4" class="text-right my-auto">
+                          <v-btn class="reserve text-white" style="text-transform: none" @click="reserveCar(car.id)">
+                            <p class="mx-2">Rezervuoti</p>
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-card-text>
+                  </v-card>
+                </li>
+              </ul>
+            </div>
 
-                    <v-col cols="12" sm="4" class="text-right my-auto">
-                      <v-btn class="reserve text-white" style="text-transform: none">
-                        <p class="mx-2">Rezervuoti</p>
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-              </v-card>
-            </li>
-          </ul>
+            <div v-else class="text-center pa-6 text-subtitle-1">
+              Pasirinkite nuo - iki laiką
+            </div>
+
           </v-card>
+
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {mdiCarBack} from "@mdi/js";
 import SvgIcon from "@jamescoyle/vue-icon";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import {computed, onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
+import {useToast} from 'vue-toastification';
 import CarService from "@/services/CarService.ts";
-import FilterDropdown from "@/components/FilterDropdown.vue"; // Assuming you have this service
 
-const date = ref();
 const cars = ref([]);
-const statusesFilter = ref ([]);
+const toast = useToast();
+const startDate = ref();
+const endDate = ref();
 
-// Fetch cars when the component is mounted
+watch([startDate, endDate], async ([newStart, newEnd]) => {
+  if (newStart && newEnd) {
+    try {
+      const isoStart = newStart.toISOString();
+      const isoEnd = newEnd.toISOString();
+      cars.value = await CarService.getAvailableCars(isoStart, isoEnd);
+      console.log("Fetched available cars:", cars.value);
+    } catch (error) {
+      toast.error("Klaida gaunant automobilius");
+      console.error("Error fetching available cars:", error);
+    }
+  } else {
+    cars.value = [];
+  }
+});
+
 onMounted(async () => {
   try {
     cars.value = await CarService.getCars();
@@ -148,30 +169,34 @@ onMounted(async () => {
   }
 });
 
-const filteredItems = computed(() => {
-  // console.log('props.filtered_cars:', props.filtered_cars);
-  // let filtered_cars = props.filtered_cars;
-  let filtered_cars = cars.value;
+const reserveCar = async (carId: string) => {
+  try {
+    if (!startDate.value || !endDate.value) {
+      toast.error('Prasome pasirinkti data ir laika');
+      return;
+    }
 
-  if(statusesFilter.value.length){
-    filtered_cars = filtered_cars.filter(car => statusesFilter.value.includes(car.bodyType));
+    const response = await CarService.reserveCar(
+      carId,
+      startDate.value,
+      endDate.value
+    );
+
+    toast.success('Automobilis sekmingai rezervuotas!');
+    console.log('Reservation created:', response);
+
+    // Refresh the car list
+    cars.value = await CarService.getAvailableCars(
+      startDate.value.toISOString(),
+      endDate.value.toISOString()
+    );
+
+  } catch (error) {
+    toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));
+    console.error('Reservation error:', error);
   }
-  console.log('const filteredItems:', filtered_cars);
+};
 
-  return filtered_cars;
-})
-
-const handleCheckboxFilter = (filter) => {
-  // console.log(statusesFilter.value)
-  if (statusesFilter.value.includes(filter)) {
-    return statusesFilter.value.splice(statusesFilter.value.indexOf(filter),1);
-  } else {
-    statusesFilter.value.push(filter);
-  }
-  // console.log('Updated statusesFilter:', statusesFilter.value); // Log the updated filter status
-
-  // return statusesFilter.value.push(filter);
-}
 </script>
 
 
