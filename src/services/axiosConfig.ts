@@ -25,8 +25,8 @@ axiosInstance.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 403) {
       // Token is invalid or expired
-      localStorage.removeItem('jwtToken'); // Clear the token
-      window.location.href = '/login'; // Redirect to login
+      // localStorage.removeItem('jwtToken'); // Clear the token
+      // window.location.href = '/login'; // Redirect to login
     }
     return Promise.reject(error);
   }
