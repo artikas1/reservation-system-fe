@@ -106,9 +106,6 @@
                             {{ equipment.manufacturer }}
                             {{ equipment.model }}
                           </v-card-text>
-                          <!--                        <div class="pa-1">-->
-                          <!--                          <p class="work-tools" v-for="item in item" :key="item.title">{{ item.title }} </p>-->
-                          <!--                        </div>-->
                         </v-col>
 
                         <v-col cols="12" sm="4" class="text-right my-auto">
@@ -117,7 +114,36 @@
                             <p class="mx-2">Rezervuoti</p>
                           </v-btn>
                         </v-col>
+                        <v-col
+                          cols="12"
+                          sm="4"
+                          class="my-auto"
+                          v-if="reviews[equipment.id]?.length > 0"
+                        >
+                          <v-btn @click="showComments(equipment.id)">
+                            <p class="mx-2">Komentarai</p>
+                          </v-btn>
+                        </v-col>
                       </v-row>
+                      <v-expand-transition>
+                        <div v-if="visibleCommentId === equipment.id" class="px-4 pb-4 pt-1 mt-6">
+                          <div v-if="reviews[equipment.id]?.length">
+                            <div
+                              v-for="(review, index) in reviews[equipment.id]"
+                              :key="index"
+                              class="mb-2"
+                            >
+                              <div style="font-size: 12px; color: gray;">
+                                {{ formatDateTime(review.createdAt) }}
+                              </div>
+                              <div style="font-size: 14px;">
+                                {{ review.content }}
+                              </div>
+                              <v-divider class="my-2"></v-divider>
+                            </div>
+                          </div>
+                        </div>
+                      </v-expand-transition>
                     </v-card-text>
                   </v-card>
                 </li>
@@ -135,41 +161,62 @@
 </template>
 
 <script setup lang="ts">
-import {mdiCamera} from "@mdi/js";
-import SvgIcon from "@jamescoyle/vue-icon";
+import {ref, watch} from "vue";
+import {useToast} from "vue-toastification";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
-import {onMounted, ref, watch} from "vue";
+import SvgIcon from "@jamescoyle/vue-icon";
+import {mdiCamera} from "@mdi/js";
 import EquipmentService from "@/services/EquipmentService.ts";
-import {useToast} from "vue-toastification";
+import ReviewService from "@/services/ReviewService";
+import { formatDateTime } from "@/utils/dateFormatter";
+import { EntityType } from "@/types/EntityType";
 
 const equipment = ref([]);
-const toast = useToast();
+const reviews = ref<Record<string, { content: string; createdAt: string }[]>>({});
+const visibleCommentId = ref<string | null>(null);
+
 const startDate = ref();
 const endDate = ref();
+
+const toast = useToast();
+
+const showComments = (equipmentId: string) => {
+  visibleCommentId.value = visibleCommentId.value === equipmentId ? null : equipmentId;
+};
 
 watch([startDate, endDate], async ([newStart, newEnd]) => {
   if (newStart && newEnd) {
     try {
       const isoStart = newStart.toISOString();
       const isoEnd = newEnd.toISOString();
+
+      //Fetch available equipment
       equipment.value = await EquipmentService.getAvailableEquipment(isoStart, isoEnd);
       console.log("Fetched available equipment:", equipment.value);
+
+      //Fetch all reviews in parallel
+      const reviewPromises = equipment.value.map(equipment =>
+        ReviewService.getReviewsByEntity(equipment.id, EntityType.EQUIPMENT)
+          .catch(error => {
+            console.warn(`Failed to get reviews for equipment ${equipment.id}`, error);
+            return [] as Review[]; // Explicitly type the fallback
+          })
+      );
+
+      const allReviews = await Promise.all(reviewPromises);
+
+      //Assign reviews to each equipment
+      equipment.value.forEach((equipment, index) => {
+        reviews.value[equipment.id] = allReviews[index];
+      });
+
     } catch (error) {
-      toast.error("Klaida gaunant iranga");
+      toast.error("Klaida gaunant patalpas");
       console.error("Error fetching available equipment:", error);
     }
   } else {
     equipment.value = [];
-  }
-});
-
-onMounted(async () => {
-  try {
-    equipment.value = await EquipmentService.getEquipment();
-    console.log('Fetched equipment:', equipment.value);
-  } catch (error) {
-    console.error('Error fetching equipment:', error);
   }
 });
 

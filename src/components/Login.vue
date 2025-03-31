@@ -1,23 +1,17 @@
 <template>
   <v-app id="inspire">
-    <!-- Ensure the content takes up the full height of the viewport -->
-    <v-content class="app-container" style="height: 100vh;">
-      <!-- Use a fluid container that fills the height and centers its content -->
-      <v-container fluid fill-height>
-        <!-- Center the layout both vertically and horizontally -->
-        <v-layout align-center>
-          <!-- Adjust the flex width for responsiveness -->
-          <v-flex xs12 sm8 md6 lg4>
+    <v-content class="app-container">
+      <v-container class="d-flex align-center justify-center" style="height: 100vh;">
+          <v-flex >
             <!-- Login card with a minimum width for better appearance -->
-            <v-card class="elevation-12" style="min-width: 400px;">
-              <v-toolbar dark color="primary">
-                <v-toolbar-title>Login form</v-toolbar-title>
+            <v-card class="elevation-12" style="min-width: 350px;">
+              <v-toolbar color="rgb(64, 124, 146)">
+                <v-toolbar-title>Login</v-toolbar-title>
               </v-toolbar>
               <v-card-text>
                 <v-form @submit.prevent="login">
                   <v-text-field
                     v-model="email"
-                    prepend-icon="person"
                     name="email"
                     label="Email"
                     type="email"
@@ -26,7 +20,6 @@
                   <v-text-field
                     v-model="password"
                     id="password"
-                    prepend-icon="lock"
                     name="password"
                     label="Password"
                     type="password"
@@ -40,7 +33,7 @@
               </v-card-actions>
             </v-card>
           </v-flex>
-        </v-layout>
+
       </v-container>
     </v-content>
   </v-app>
@@ -48,6 +41,9 @@
 
 <script>
 import axios from 'axios';
+import {useToast} from "vue-toastification";
+
+const toast = useToast();
 
 export default {
   name: 'Login',
@@ -74,6 +70,7 @@ export default {
 
         // Redirect to the home page or a protected route
         this.$router.push('/home');
+        toast.success("Sveiki sugrįžę!")
       } catch (error) {
         console.error('Login failed:', error);
         alert('Login failed. Please check your credentials.');

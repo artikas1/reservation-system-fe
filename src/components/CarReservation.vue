@@ -111,7 +111,36 @@
                             <p class="mx-2">Rezervuoti</p>
                           </v-btn>
                         </v-col>
+                        <v-col
+                          cols="12"
+                          sm="4"
+                          class="my-auto"
+                          v-if="reviews[car.id]?.length > 0"
+                        >
+                          <v-btn @click="showComments(car.id)">
+                            <p class="mx-2">Komentarai</p>
+                          </v-btn>
+                        </v-col>
                       </v-row>
+                      <v-expand-transition>
+                        <div v-if="visibleCommentId === car.id" class="px-4 pb-4 pt-1 mt-6">
+                          <div v-if="reviews[car.id]?.length">
+                            <div
+                              v-for="(review, index) in reviews[car.id]"
+                              :key="index"
+                              class="mb-2"
+                            >
+                              <div style="font-size: 12px; color: gray;">
+                                {{ formatDateTime(review.createdAt) }}
+                              </div>
+                              <div style="font-size: 14px;">
+                                {{ review.content }}
+                              </div>
+                              <v-divider class="my-2"></v-divider>
+                            </div>
+                          </div>
+                        </div>
+                      </v-expand-transition>
                     </v-card-text>
                   </v-card>
                 </li>
@@ -131,41 +160,62 @@
 </template>
 
 <script setup lang="ts">
-import {mdiCarBack} from "@mdi/js";
-import SvgIcon from "@jamescoyle/vue-icon";
+import {ref, watch} from "vue";
+import {useToast} from 'vue-toastification';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import {onMounted, ref, watch} from "vue";
-import {useToast} from 'vue-toastification';
+import SvgIcon from "@jamescoyle/vue-icon";
+import {mdiCarBack} from "@mdi/js";
 import CarService from "@/services/CarService.ts";
+import ReviewService from "@/services/ReviewService";
+import { formatDateTime } from "@/utils/dateFormatter";
+import { EntityType } from "@/types/EntityType";
 
 const cars = ref([]);
-const toast = useToast();
+const reviews = ref<Record<string, { content: string; createdAt: string }[]>>({});
+const visibleCommentId = ref<string | null>(null);
+
 const startDate = ref();
 const endDate = ref();
+
+const toast = useToast();
+
+const showComments = (carId: string) => {
+  visibleCommentId.value = visibleCommentId.value === carId ? null : carId;
+};
 
 watch([startDate, endDate], async ([newStart, newEnd]) => {
   if (newStart && newEnd) {
     try {
       const isoStart = newStart.toISOString();
       const isoEnd = newEnd.toISOString();
+
+      //Fetch available cars
       cars.value = await CarService.getAvailableCars(isoStart, isoEnd);
       console.log("Fetched available cars:", cars.value);
+
+      //Fetch all reviews in parallel
+      const reviewPromises = cars.value.map(car =>
+        ReviewService.getReviewsByEntity(car.id, EntityType.CAR)
+          .catch(error => {
+            console.warn(`Failed to get reviews for car ${car.id}`, error);
+            return [] as Review[]; // Explicitly type the fallback
+          })
+      );
+
+      const allReviews = await Promise.all(reviewPromises);
+
+      //Assign reviews to each car
+      cars.value.forEach((car, index) => {
+        reviews.value[car.id] = allReviews[index];
+      });
+
     } catch (error) {
-      toast.error("Klaida gaunant automobilius");
+      toast.error("Klaida gaunant patalpas");
       console.error("Error fetching available cars:", error);
     }
   } else {
     cars.value = [];
-  }
-});
-
-onMounted(async () => {
-  try {
-    cars.value = await CarService.getCars();
-    console.log('Fetched cars:', cars.value);
-  } catch (error) {
-    console.error('Error fetching cars:', error);
   }
 });
 

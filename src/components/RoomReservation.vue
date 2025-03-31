@@ -123,17 +123,42 @@
                           <v-card-text class="text-subtitle-2 pa-1">
                             {{ room.description }}
                           </v-card-text>
-                          <!--                        <div class="pa-1">-->
-                          <!--                          <p class="work-tools" v-for="item in items" :key="item.title">{{ item.title }} </p>-->
-                          <!--                        </div>-->
                         </v-col>
-
                         <v-col cols="12" sm="4" class="text-right my-auto">
                           <v-btn class="reserve text-white" style="text-transform: none" @click="reserveRoom(room.id)">
                             <p class="mx-2">Rezervuoti</p>
                           </v-btn>
                         </v-col>
+                        <v-col
+                          cols="12"
+                          sm="4"
+                          class="my-auto"
+                          v-if="reviews[room.id]?.length > 0"
+                        >
+                          <v-btn @click="showComments(room.id)">
+                            <p class="mx-2">Komentarai</p>
+                          </v-btn>
+                        </v-col>
                       </v-row>
+                      <v-expand-transition>
+                        <div v-if="visibleCommentId === room.id" class="px-4 pb-4 pt-1 mt-6">
+                          <div v-if="reviews[room.id]?.length">
+                            <div
+                              v-for="(review, index) in reviews[room.id]"
+                              :key="index"
+                              class="mb-2"
+                            >
+                              <div style="font-size: 12px; color: gray;">
+                                {{ formatDateTime(review.createdAt) }}
+                              </div>
+                              <div style="font-size: 14px;">
+                                {{ review.content }}
+                              </div>
+                              <v-divider class="my-2"></v-divider>
+                            </div>
+                          </div>
+                        </div>
+                      </v-expand-transition>
                     </v-card-text>
                   </v-card>
                 </li>
@@ -154,41 +179,63 @@
 </template>
 
 <script setup lang="ts">
-import {mdiChairRolling} from "@mdi/js";
-import SvgIcon from "@jamescoyle/vue-icon";
-import {onMounted, ref, watch} from "vue";
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
-import RoomService from "@/services/RoomService.ts";
+import {ref, watch} from "vue";
 import {useToast} from "vue-toastification";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import SvgIcon from "@jamescoyle/vue-icon";
+import {mdiChairRolling} from "@mdi/js";
+import RoomService from "@/services/RoomService";
+import ReviewService from "@/services/ReviewService";
+import {formatDateTime} from "@/utils/dateFormatter";
+import {EntityType} from "@/types/EntityType";
+
 
 const rooms = ref([]);
-const toast = useToast();
+const reviews = ref<Record<string, { content: string; createdAt: string }[]>>({});
+const visibleCommentId = ref<string | null>(null);
+
 const startDate = ref();
 const endDate = ref();
+
+const toast = useToast();
+
+const showComments = (roomId: string) => {
+  visibleCommentId.value = visibleCommentId.value === roomId ? null : roomId;
+};
 
 watch([startDate, endDate], async ([newStart, newEnd]) => {
   if (newStart && newEnd) {
     try {
       const isoStart = newStart.toISOString();
       const isoEnd = newEnd.toISOString();
+
+      //Fetch available rooms
       rooms.value = await RoomService.getAvailableRooms(isoStart, isoEnd);
       console.log("Fetched available rooms:", rooms.value);
+
+      //Fetch all reviews in parallel
+      const reviewPromises = rooms.value.map(room =>
+        ReviewService.getReviewsByEntity(room.id, EntityType.ROOM)
+          .catch(error => {
+            console.warn(`Failed to get reviews for room ${room.id}`, error);
+            return [] as Review[]; // Explicitly type the fallback
+          })
+      );
+
+      const allReviews = await Promise.all(reviewPromises);
+
+      //Assign reviews to each room
+      rooms.value.forEach((room, index) => {
+        reviews.value[room.id] = allReviews[index];
+      });
+
     } catch (error) {
-      toast.error("Klaida gaunant automobilius");
+      toast.error("Klaida gaunant patalpas");
       console.error("Error fetching available rooms:", error);
     }
   } else {
     rooms.value = [];
-  }
-});
-
-onMounted(async () => {
-  try {
-    rooms.value = await RoomService.getRooms();
-    console.log('Fetched rooms:', rooms);
-  } catch (error) {
-    console.error('Error fetching rooms:', error);
   }
 });
 
@@ -208,7 +255,7 @@ const reserveRoom = async (roomId: string) => {
     toast.success('Patalpa sekmingai rezervuota!');
     console.log('Reservation created:', response);
 
-    // Refresh the room list
+    //Refresh the room list
     rooms.value = await RoomService.getAvailableRooms(
       startDate.value.toISOString(),
       endDate.value.toISOString()

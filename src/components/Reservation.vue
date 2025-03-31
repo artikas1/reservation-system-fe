@@ -237,6 +237,7 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
+import {useToast} from "vue-toastification";
 import SvgIcon from '@jamescoyle/vue-icon';
 import {mdiChairRolling, mdiCamera, mdiCar, mdiCommentOutline, mdiPencilOutline, mdiClose} from '@mdi/js';
 import RoomService from "@/services/RoomService.ts";
@@ -254,6 +255,7 @@ const commentText = ref('');
 const activeCommentId = ref(null);
 
 const reviews = ref<Record<string, { content: string, createdAt: string }[]>>({});
+const toast = useToast();
 
 const showCommentBox = async (reservationId: string, entityId: string, entityType: EntityType) => {
   activeCommentId.value = activeCommentId.value === reservationId ? null : reservationId;
@@ -278,6 +280,7 @@ const submitComment = async (entityId: string, entityType: EntityType) => {
       entityType,
       true
     );
+    toast.success('Komentaras paliktas!');
     console.log('Comment submitted!', response);
     activeCommentId.value = null;
     commentText.value = '';
