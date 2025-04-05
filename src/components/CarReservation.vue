@@ -102,6 +102,20 @@
                           <v-card-text class="text-h6 pa-1">
                             {{ car.manufacturer }} {{ car.model }}
                           </v-card-text>
+
+                          <v-tooltip location="top">
+                            <template #activator="{ props }">
+                              <svg-icon
+                                v-if="car.isEcoFriendly"
+                                v-bind="props"
+                                type="mdi"
+                                :path="mdiSprout"
+                                style="color: green; margin-left: 8px; height: 24px; width: 24px;"
+                              />
+                            </template>
+                            <span>Ekologiškesnis pasirinkimas</span>
+                          </v-tooltip>
+
                           <v-card-text class="text-subtitle-2 pa-1">
                             {{ car.bodyType }}
                           </v-card-text>
@@ -165,7 +179,7 @@ import {useToast} from 'vue-toastification';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import SvgIcon from "@jamescoyle/vue-icon";
-import {mdiCarBack} from "@mdi/js";
+import {mdiCarBack, mdiSprout} from "@mdi/js";
 import CarService from "@/services/CarService.ts";
 import ReviewService from "@/services/ReviewService";
 import { formatDateTime } from "@/utils/dateFormatter";
@@ -191,7 +205,7 @@ watch([startDate, endDate], async ([newStart, newEnd]) => {
       const isoEnd = newEnd.toISOString();
 
       //Fetch available cars
-      cars.value = await CarService.getAvailableCars(isoStart, isoEnd);
+      cars.value = await CarService.getAvailableEcoCars(isoStart, isoEnd);
       console.log("Fetched available cars:", cars.value);
 
       //Fetch all reviews in parallel
@@ -211,7 +225,7 @@ watch([startDate, endDate], async ([newStart, newEnd]) => {
       });
 
     } catch (error) {
-      toast.error("Klaida gaunant patalpas");
+      toast.error("Klaida gaunant automobilius");
       console.error("Error fetching available cars:", error);
     }
   } else {
@@ -236,7 +250,7 @@ const reserveCar = async (carId: string) => {
     console.log('Reservation created:', response);
 
     // Refresh the car list
-    cars.value = await CarService.getAvailableCars(
+    cars.value = await CarService.getAvailableEcoCars(
       startDate.value.toISOString(),
       endDate.value.toISOString()
     );

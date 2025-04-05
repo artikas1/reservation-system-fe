@@ -56,19 +56,19 @@ export default {
   methods: {
     async login() {
       try {
-        // Send a login request to the backend
+        //Send a login request to the backend
         const response = await axios.post('http://localhost:8080/auth/login', {
           email: this.email,
           password: this.password,
         });
 
-        // Extract the JWT token from the response
+        //Extract the JWT token from the response
         const token = response.data.token;
 
-        // Store the token in local storage
+        //Store the token in local storage
         localStorage.setItem('jwtToken', token);
 
-        // Redirect to the home page or a protected route
+        //Redirect to the home page or a protected route
         this.$router.push('/home');
         toast.success("Sveiki sugrįžę!")
       } catch (error) {

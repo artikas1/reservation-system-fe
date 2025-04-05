@@ -28,6 +28,19 @@ class CarService {
     }
   }
 
+  async getAvailableEcoCars(startTime: string, endTime: string): Promise<any> {
+    try {
+      const response = await axiosInstance.get(`${CAR_API_BASE_URL}/available/eco`, {
+        params: { startTime, endTime },
+      });
+      console.log('Available eco-friendly cars received:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching available eco-friendly cars:', error);
+      throw error;
+    }
+  }
+
   async getCarReservations() : Promise<any>  {
     try {
       const response = await axiosInstance.get(`${CAR_RESERVATION_API_URL}/user`);
