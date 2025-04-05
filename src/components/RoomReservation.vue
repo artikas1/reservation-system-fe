@@ -187,7 +187,7 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import {mdiChairRolling} from "@mdi/js";
 import RoomService from "@/services/RoomService";
 import ReviewService from "@/services/ReviewService";
-import {formatDateTime} from "@/utils/dateFormatter";
+import {formatDateTime, formatForBackend} from "@/utils/dateFormatter";
 import {EntityType} from "@/types/EntityType";
 
 
@@ -207,11 +207,11 @@ const showComments = (roomId: string) => {
 watch([startDate, endDate], async ([newStart, newEnd]) => {
   if (newStart && newEnd) {
     try {
-      const isoStart = newStart.toISOString();
-      const isoEnd = newEnd.toISOString();
+      const formattedStart = formatForBackend(startDate.value);
+      const formattedEnd = formatForBackend(endDate.value);
 
       //Fetch available rooms
-      rooms.value = await RoomService.getAvailableRooms(isoStart, isoEnd);
+      rooms.value = await RoomService.getAvailableRooms(formattedStart, formattedEnd);
       console.log("Fetched available rooms:", rooms.value);
 
       //Fetch all reviews in parallel
@@ -246,20 +246,17 @@ const reserveRoom = async (roomId: string) => {
       return;
     }
 
-    const response = await RoomService.reserveRoom(
-      roomId,
-      startDate.value,
-      endDate.value
-    );
+    const formattedStart = formatForBackend(startDate.value);
+    const formattedEnd = formatForBackend(endDate.value);
+
+    const response = await RoomService.reserveRoom(roomId, formattedStart, formattedEnd);
+
 
     toast.success('Patalpa sekmingai rezervuota!');
     console.log('Reservation created:', response);
 
     //Refresh the room list
-    rooms.value = await RoomService.getAvailableRooms(
-      startDate.value.toISOString(),
-      endDate.value.toISOString()
-    );
+    rooms.value = await RoomService.getAvailableRooms(formattedStart, formattedEnd);
 
   } catch (error) {
     toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));

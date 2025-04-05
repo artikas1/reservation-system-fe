@@ -182,7 +182,7 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import {mdiCarBack, mdiSprout} from "@mdi/js";
 import CarService from "@/services/CarService.ts";
 import ReviewService from "@/services/ReviewService";
-import { formatDateTime } from "@/utils/dateFormatter";
+import { formatDateTime, formatForBackend } from "@/utils/dateFormatter";
 import { EntityType } from "@/types/EntityType";
 
 const cars = ref([]);
@@ -201,11 +201,11 @@ const showComments = (carId: string) => {
 watch([startDate, endDate], async ([newStart, newEnd]) => {
   if (newStart && newEnd) {
     try {
-      const isoStart = newStart.toISOString();
-      const isoEnd = newEnd.toISOString();
+      const formattedStart = formatForBackend(startDate.value);
+      const formattedEnd = formatForBackend(endDate.value);
 
       //Fetch available cars
-      cars.value = await CarService.getAvailableEcoCars(isoStart, isoEnd);
+      cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd);
       console.log("Fetched available cars:", cars.value);
 
       //Fetch all reviews in parallel
@@ -240,20 +240,17 @@ const reserveCar = async (carId: string) => {
       return;
     }
 
-    const response = await CarService.reserveCar(
-      carId,
-      startDate.value,
-      endDate.value
-    );
+    const formattedStart = formatForBackend(startDate.value);
+    const formattedEnd = formatForBackend(endDate.value);
+
+    const response = await CarService.reserveCar(carId, formattedStart, formattedEnd);
+
 
     toast.success('Automobilis sekmingai rezervuotas!');
     console.log('Reservation created:', response);
 
     // Refresh the car list
-    cars.value = await CarService.getAvailableEcoCars(
-      startDate.value.toISOString(),
-      endDate.value.toISOString()
-    );
+    cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd);
 
   } catch (error) {
     toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));

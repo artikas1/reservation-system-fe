@@ -169,7 +169,7 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import {mdiCamera} from "@mdi/js";
 import EquipmentService from "@/services/EquipmentService.ts";
 import ReviewService from "@/services/ReviewService";
-import { formatDateTime } from "@/utils/dateFormatter";
+import { formatDateTime, formatForBackend } from "@/utils/dateFormatter";
 import { EntityType } from "@/types/EntityType";
 
 const equipment = ref([]);
@@ -188,11 +188,11 @@ const showComments = (equipmentId: string) => {
 watch([startDate, endDate], async ([newStart, newEnd]) => {
   if (newStart && newEnd) {
     try {
-      const isoStart = newStart.toISOString();
-      const isoEnd = newEnd.toISOString();
+      const formattedStart = formatForBackend(startDate.value);
+      const formattedEnd = formatForBackend(endDate.value);
 
       //Fetch available equipment
-      equipment.value = await EquipmentService.getAvailableEquipment(isoStart, isoEnd);
+      equipment.value = await EquipmentService.getAvailableEquipment(formattedStart, formattedEnd);
       console.log("Fetched available equipment:", equipment.value);
 
       //Fetch all reviews in parallel
@@ -227,20 +227,16 @@ const reserveEquipment = async (equipmentId: string) => {
       return;
     }
 
-    const response = await EquipmentService.reserveEquipment(
-      equipmentId,
-      startDate.value,
-      endDate.value
-    );
+    const formattedStart = formatForBackend(startDate.value);
+    const formattedEnd = formatForBackend(endDate.value);
+
+    const response = await EquipmentService.reserveEquipment(equipmentId, formattedStart, formattedEnd);
 
     toast.success('Iranga sekmingai rezervuota!');
     console.log('Reservation created:', response);
 
     // Refresh the equipment list
-    equipment.value = await EquipmentService.getAvailableEquipment(
-      startDate.value.toISOString(),
-      endDate.value.toISOString()
-    );
+    equipment.value = await EquipmentService.getAvailableEquipment(formattedStart, formattedEnd);
 
   } catch (error) {
     toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));
