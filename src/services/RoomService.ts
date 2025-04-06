@@ -4,13 +4,15 @@ const ROOM_API_BASE_URL = '/room';
 const ROOM_RESERVATION_API_URL = 'room-reservation';
 
 class RoomService {
-  async getRooms(): Promise<any> {
+  async getAllRoomHistoryReservations(status?: string): Promise<any> {
     try {
-      const response = await axiosInstance.get(`${ROOM_API_BASE_URL}/all`);
-      console.log('Rooms data received:', response.data);
+      const response = await axiosInstance.get(`${ROOM_RESERVATION_API_URL}/user/history`, {
+        params: status ? { reservationStatus: status } : {}
+      });
+      console.log('All room reservation history received:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Error fetching rooms:', error);
+      console.error('Error fetching room reservation history:', error);
       throw error;
     }
   }

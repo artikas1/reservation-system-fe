@@ -4,13 +4,15 @@ const CAR_API_BASE_URL = '/car';
 const CAR_RESERVATION_API_URL = 'car-reservation';
 
 class CarService {
-  async getCars(): Promise<any> {
+  async getAllCarHistoryReservations(status?: string): Promise<any> {
     try {
-      const response = await axiosInstance.get(CAR_API_BASE_URL/all);
-      console.log('Cars data received:', response.data);
+      const response = await axiosInstance.get(`${CAR_RESERVATION_API_URL}/user/history`, {
+        params: status ? { reservationStatus: status } : {}
+      });
+      console.log('All car reservation history received:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Error fetching cars:', error);
+      console.error('Error fetching car reservation history:', error);
       throw error;
     }
   }

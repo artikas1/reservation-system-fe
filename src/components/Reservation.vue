@@ -229,7 +229,6 @@
         </v-card-text>
       </v-card>
 
-
     </v-card>
 
   </v-container>
