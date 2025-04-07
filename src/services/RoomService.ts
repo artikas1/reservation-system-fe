@@ -4,10 +4,10 @@ const ROOM_API_BASE_URL = '/room';
 const ROOM_RESERVATION_API_URL = 'room-reservation';
 
 class RoomService {
-  async getAllRoomHistoryReservations(status?: string): Promise<any> {
+  async getAllRoomHistoryReservations(status?: string, startTime?: string, endTime?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${ROOM_RESERVATION_API_URL}/user/history`, {
-        params: status ? { reservationStatus: status } : {}
+        params: { reservationStatus : status, startTime, endTime }
       });
       console.log('All room reservation history received:', response.data);
       return response.data;

@@ -4,10 +4,10 @@ const EQUIPMENT_API_BASE_URL = '/equipment';
 const EQUIPMENT_RESERVATION_API_URL = '/equipment-reservation';
 
 class EquipmentService {
-  async getAllEquipmentHistoryReservations(status?: string): Promise<any> {
+  async getAllEquipmentHistoryReservations(status?: string, startTime?: string, endTime?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${EQUIPMENT_RESERVATION_API_URL}/user/history`, {
-        params: status ? { reservationStatus: status } : {}
+        params: { reservationStatus: status, startTime, endTime }
       });
       console.log('All equipment reservation history received:', response.data);
       return response.data;

@@ -328,17 +328,6 @@ const deleteCarReservation = async (id) => {
 </script>
 
 <style>
-.work-tools {
-  display: inline-block;
-  background-color: #27424C;
-  color: white;
-  border-radius: 20px;
-  font-size: 9px;
-  font-family: 'Inter', sans-serif;
-  padding: 4px 10px;
-  margin-right: 4px;
-}
-
 .comment {
   background: linear-gradient(-12deg, #324951 0%, #116f4b 100%);
   border-radius: 10px;

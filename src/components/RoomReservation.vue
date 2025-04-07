@@ -267,16 +267,6 @@ const reserveRoom = async (roomId: string) => {
 </script>
 
 <style scoped>
-.work-tools {
-  display: inline-block;
-  background-color: #27424C;
-  color: white;
-  border-radius: 20px;
-  font-size: 9px;
-  font-family: 'Inter', sans-serif;
-  padding: 4px 10px;
-  margin-right: 4px;
-}
 
 .reserve {
   background: linear-gradient(-12deg, #324951 0%, #116f4b 100%);
