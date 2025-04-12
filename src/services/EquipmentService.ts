@@ -53,6 +53,22 @@ class EquipmentService {
     }
   }
 
+  async getReservedTimeRanges(equipmentId: string, excludeReservationId?: string): Promise<any> {
+    try {
+      const response = await axiosInstance.get(
+        `${EQUIPMENT_RESERVATION_API_URL}/equipment/${equipmentId}/time-ranges`,
+        {
+          params: excludeReservationId ? { excludeReservationId } : {}
+        }
+      );
+      console.log('Reserved time ranges received:', response.data);
+      return response.data;
+    } catch (error) {
+      console.log('Error fetching reserved time ranges:', error);
+      throw error;
+    }
+  }
+
   async reserveEquipment(equipmentId: string, startTime: string, endTime: string): Promise<any> {
     try {
       const response = await axiosInstance.post(
@@ -72,6 +88,26 @@ class EquipmentService {
       return response.data;
     } catch (error) {
       console.error('Error reserving equipment:', error);
+      throw error;
+    }
+  }
+
+  async updateReservation(reservationId: string, newStartTime: string, newEndTime: string): Promise<any> {
+    try {
+      const response = await axiosInstance.put(
+        `${EQUIPMENT_RESERVATION_API_URL}/${reservationId}`,
+        null,
+        {
+          params: {
+            newStartTime,
+            newEndTime
+          },
+        }
+      );
+      console.log('Equipment reservation updated successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating equipment reservation:', error);
       throw error;
     }
   }

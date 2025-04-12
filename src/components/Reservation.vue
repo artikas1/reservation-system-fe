@@ -7,38 +7,6 @@
         Mano aktyvios rezervacijos
       </p>
 
-      <!--      <v-card class="ma-10">-->
-      <!--        <v-card-text>-->
-      <!--          <v-row>-->
-      <!--            <v-col cols="12" sm="2" md="1" class="text-center mt-3">-->
-      <!--              <svg-icon type="mdi" :path="mdiChairRolling"-->
-      <!--                        style="color: #27424B; height: 40px; width: 38px"></svg-icon>-->
-      <!--            </v-col>-->
-      <!--            <v-col cols="12" sm="6" md="7">-->
-      <!--              <v-card-title class="text-subtitle-1 pb-1">-->
-      <!--                Darbo vieta-->
-      <!--              </v-card-title>-->
-      <!--              <v-card-text class="pb-1">-->
-      <!--                Saltoniškių g. 19, 2 aukštas<br>-->
-      <!--                Rezervuota nuo 2023-09-18 iki 2023-10-18-->
-      <!--              </v-card-text>-->
-      <!--              <div style="margin-bottom: 10px; margin-left: 14px">-->
-      <!--                <p class="work-tools" v-for="item in items" :key="item.title">{{ item.title }} </p>-->
-      <!--              </div>-->
-      <!--            </v-col>-->
-
-      <!--            <v-col cols="12" sm="4" class="text-right my-auto">-->
-      <!--              <v-btn icon class="me-2">-->
-      <!--                <svg-icon type="mdi" :path="mdiPencilOutline"></svg-icon>-->
-      <!--              </v-btn>-->
-      <!--              <v-btn icon>-->
-      <!--                <svg-icon type="mdi" :path="mdiClose"></svg-icon>-->
-      <!--              </v-btn>-->
-      <!--            </v-col>-->
-      <!--          </v-row>-->
-      <!--        </v-card-text>-->
-      <!--      </v-card>-->
-
       <v-card class="ma-10" v-for="room in rooms" :key="room.id">
         <v-card-text>
           <v-row>
@@ -68,15 +36,53 @@
               </v-card-text>
             </v-col>
             <v-col cols="12" sm="4" class="text-right my-auto">
-              <v-btn icon class="me-2" @click="showCommentBox(room.id, room.room.id, EntityType.ROOM)">
+              <v-btn icon="" class="me-2" @click="showCommentBox(room.id, room.room.id, EntityType.ROOM)">
                 <svg-icon type="mdi" :path="mdiCommentOutline"></svg-icon>
               </v-btn>
-              <v-btn icon class="me-2">
+              <v-btn icon="" class="me-2" @click="startEditingReservation(room, 'room')">
                 <svg-icon type="mdi" :path="mdiPencilOutline"></svg-icon>
               </v-btn>
-              <v-btn icon @click="deleteRoomReservation(room.id)">
+              <v-btn icon="" @click="deleteRoomReservation(room.id)">
                 <svg-icon type="mdi" :path="mdiClose"></svg-icon>
               </v-btn>
+            </v-col>
+            <v-col v-if="editingReservationId === `room-${room.id}`" cols="12" style="position: relative; z-index: 1">
+              <v-row class="d-flex">
+
+                <v-col cols="12" md="6">
+                  <VueDatePicker
+                    v-model="startDate"
+                    label="Pradžios data"
+                    class="rounded mb-4"
+                    locale="lt"
+                    :enable-time-picker="true"
+                    :min-date="new Date()"
+                    :disabled-dates="isDateDisabled"
+                    teleport="body"
+                  ></VueDatePicker>
+                </v-col>
+
+                <v-col cols="12" md="6">
+
+                  <VueDatePicker
+                    v-model="endDate"
+                    label="Pabaigos data"
+                    class="rounded mb-4"
+                    locale="lt"
+                    :enable-time-picker="true"
+                    :min-date="startDate"
+                    :disabled-dates="isDateDisabled"
+                    teleport="body"
+                  ></VueDatePicker>
+
+                </v-col>
+
+                <v-col cols="12" class="text-right">
+                  <v-btn class="comment" color="primary" @click="updateReservation(room.id, 'room')">
+                    Atnaujinti
+                  </v-btn>
+                </v-col>
+              </v-row>
             </v-col>
             <v-col v-if="activeCommentId === room.id" class="text-right">
               <v-textarea
@@ -128,15 +134,54 @@
               </v-card-text>
             </v-col>
             <v-col cols="12" sm="4" class="text-right my-auto">
-              <v-btn icon class="me-2" @click="showCommentBox(equipment.id, equipment.equipment.id, EntityType.EQUIPMENT)">
+              <v-btn icon="" class="me-2"
+                     @click="showCommentBox(equipment.id, equipment.equipment.id, EntityType.EQUIPMENT)">
                 <svg-icon type="mdi" :path="mdiCommentOutline"></svg-icon>
               </v-btn>
-              <v-btn icon class="me-2">
+              <v-btn icon="" class="me-2" @click="startEditingReservation(equipment, 'equipment')">
                 <svg-icon type="mdi" :path="mdiPencilOutline"></svg-icon>
               </v-btn>
-              <v-btn icon @click="deleteEquipmentReservation(equipment.id)">
+              <v-btn icon="" @click="deleteEquipmentReservation(equipment.id)">
                 <svg-icon type="mdi" :path="mdiClose"></svg-icon>
               </v-btn>
+            </v-col>
+            <v-col v-if="editingReservationId === `equipment-${equipment.id}`" cols="12" style="position: relative; z-index: 1">
+              <v-row class="d-flex">
+
+                <v-col cols="12" md="6">
+                  <VueDatePicker
+                    v-model="startDate"
+                    label="Pradžios data"
+                    class="rounded mb-4"
+                    locale="lt"
+                    :enable-time-picker="true"
+                    :min-date="new Date()"
+                    :disabled-dates="isDateDisabled"
+                    teleport="body"
+                  ></VueDatePicker>
+                </v-col>
+
+                <v-col cols="12" md="6">
+
+                  <VueDatePicker
+                    v-model="endDate"
+                    label="Pabaigos data"
+                    class="rounded mb-4"
+                    locale="lt"
+                    :enable-time-picker="true"
+                    :min-date="startDate"
+                    :disabled-dates="isDateDisabled"
+                    teleport="body"
+                  ></VueDatePicker>
+
+                </v-col>
+
+                <v-col cols="12" class="text-right">
+                  <v-btn class="comment" color="primary" @click="updateReservation(equipment.id, 'equipment')">
+                    Atnaujinti
+                  </v-btn>
+                </v-col>
+              </v-row>
             </v-col>
             <v-col v-if="activeCommentId === equipment.id" class="text-right">
               <v-textarea
@@ -191,15 +236,53 @@
               </v-card-text>
             </v-col>
             <v-col cols="12" sm="4" class="text-right my-auto">
-              <v-btn icon class="me-2" @click="showCommentBox(car.id, car.car.id, EntityType.CAR)">
+              <v-btn icon="" class="me-2" @click="showCommentBox(car.id, car.car.id, EntityType.CAR)">
                 <svg-icon type="mdi" :path="mdiCommentOutline"></svg-icon>
               </v-btn>
-              <v-btn icon class="me-2">
+              <v-btn icon="" class="me-2" @click="startEditingReservation(car, 'car')">
                 <svg-icon type="mdi" :path="mdiPencilOutline"></svg-icon>
               </v-btn>
-              <v-btn icon @click="deleteCarReservation(car.id)">
+              <v-btn icon="" @click="deleteCarReservation(car.id)">
                 <svg-icon type="mdi" :path="mdiClose"></svg-icon>
               </v-btn>
+            </v-col>
+            <v-col v-if="editingReservationId === `car-${car.id}`" cols="12" style="position: relative; z-index: 1">
+              <v-row class="d-flex">
+
+                <v-col cols="12" md="6">
+                    <VueDatePicker
+                      v-model="startDate"
+                      label="Pradžios data"
+                      class="rounded mb-4"
+                      locale="lt"
+                      :enable-time-picker="true"
+                      :min-date="new Date()"
+                      :disabled-dates="isDateDisabled"
+                      teleport="body"
+                    ></VueDatePicker>
+                </v-col>
+
+                <v-col cols="12" md="6">
+
+                  <VueDatePicker
+                    v-model="endDate"
+                    label="Pabaigos data"
+                    class="rounded mb-4"
+                    locale="lt"
+                    :enable-time-picker="true"
+                    :min-date="startDate"
+                    :disabled-dates="isDateDisabled"
+                    teleport="body"
+                  ></VueDatePicker>
+
+                </v-col>
+
+                <v-col cols="12" class="text-right">
+                  <v-btn class="comment" color="primary" @click="updateReservation(car.id, 'car')">
+                    Atnaujinti
+                  </v-btn>
+                </v-col>
+              </v-row>
             </v-col>
             <v-col v-if="activeCommentId === car.id" class="text-right">
               <v-textarea
@@ -237,6 +320,7 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import {useToast} from "vue-toastification";
+import VueDatePicker from '@vuepic/vue-datepicker';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {mdiChairRolling, mdiCamera, mdiCar, mdiCommentOutline, mdiPencilOutline, mdiClose} from '@mdi/js';
 import RoomService from "@/services/RoomService.ts";
@@ -255,6 +339,11 @@ const activeCommentId = ref(null);
 
 const reviews = ref<Record<string, { content: string, createdAt: string }[]>>({});
 const toast = useToast();
+
+const editingReservationId = ref<string | null>(null);
+const startDate = ref<Date | null>(null);
+const endDate = ref<Date | null>(null);
+const reservedTimeRanges = ref<{ reservedFrom: string, reservedTo: string }[]>([]);
 
 const showCommentBox = async (reservationId: string, entityId: string, entityType: EntityType) => {
   activeCommentId.value = activeCommentId.value === reservationId ? null : reservationId;
@@ -325,6 +414,73 @@ const deleteCarReservation = async (id) => {
     console.error('Error deleting car reservation:', error);
   }
 }
+
+const startEditingReservation = async (reservation, type: 'car' | 'equipment' | 'room') => {
+  const reservationKey = `${type}-${reservation.id}`;
+
+  if (editingReservationId.value === reservationKey) {
+    editingReservationId.value = null;
+    return;
+  }
+
+  try {
+    editingReservationId.value = reservationKey;
+    startDate.value = new Date(reservation.reservedFrom);
+    endDate.value = new Date(reservation.reservedTo);
+
+    if (type === 'car') {
+      reservedTimeRanges.value = await CarService.getReservedTimeRanges(reservation.car.id, reservation.id);
+    } else if (type === 'equipment') {
+      reservedTimeRanges.value = await EquipmentService.getReservedTimeRanges(reservation.equipment.id, reservation.id);
+    } else if (type === 'room') {
+      reservedTimeRanges.value = await RoomService.getReservedTimeRanges(reservation.room.id, reservation.id);
+    }
+
+  } catch (err) {
+    console.error("Error starting edit mode:", err);
+    toast.error("Nepavyko įkelti rezervacijos duomenų");
+    editingReservationId.value = null;
+  }
+};
+
+const isDateDisabled = (date: Date) => {
+  return reservedTimeRanges.value.some(range => {
+    const from = new Date(range.reservedFrom);
+    const to = new Date(range.reservedTo);
+    return date >= from && date < to;
+  });
+};
+
+const updateReservation = async (reservationId: string, type: 'car' | 'equipment' | 'room') => {
+  try {
+    if (!startDate.value || !endDate.value) {
+      toast.error('Prašome pasirinkti datas');
+      return;
+    }
+
+    // Convert dates to ISO strings before sending
+    const formattedStart = startDate.value.toISOString();
+    const formattedEnd = endDate.value.toISOString();
+
+    if (type === 'car') {
+      await CarService.updateReservation(reservationId, formattedStart, formattedEnd);
+      cars.value = await CarService.getCarReservations();
+    } else if (type === 'equipment') {
+      await EquipmentService.updateReservation(reservationId, formattedStart, formattedEnd);
+      equipment.value = await EquipmentService.getEquipmentReservations();
+    } else if (type === 'room') {
+      await RoomService.updateReservation(reservationId, formattedStart, formattedEnd);
+      rooms.value = await RoomService.getRoomReservations();
+    }
+
+    toast.success('Rezervacija atnaujinta sėkmingai!');
+    editingReservationId.value = null;
+
+  } catch (error) {
+    toast.error('Klaida atnaujinant rezervaciją: ' + (error.response?.data?.message || error.message));
+    console.error('Update error:', error);
+  }
+};
 </script>
 
 <style>
@@ -346,4 +502,10 @@ const deleteCarReservation = async (id) => {
     transition: width 0.5s;
   }
 }
+
+.dp__icon svg {
+  width: 24px !important;
+  height: 24px !important;
+}
+
 </style>

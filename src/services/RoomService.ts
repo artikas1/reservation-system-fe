@@ -7,7 +7,7 @@ class RoomService {
   async getAllRoomHistoryReservations(status?: string, startTime?: string, endTime?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${ROOM_RESERVATION_API_URL}/user/history`, {
-        params: { reservationStatus : status, startTime, endTime }
+        params: {reservationStatus: status, startTime, endTime}
       });
       console.log('All room reservation history received:', response.data);
       return response.data;
@@ -20,7 +20,7 @@ class RoomService {
   async getAvailableRooms(startTime: string, endTime: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${ROOM_API_BASE_URL}/available`, {
-        params: { startTime, endTime },
+        params: {startTime, endTime},
       });
       console.log('Available rooms received:', response.data);
       return response.data;
@@ -44,7 +44,7 @@ class RoomService {
   async deleteReservationByRoomReservationId(roomReservationId: string): Promise<void> {
     try {
       await axiosInstance.delete(`room-reservation/delete`, {
-        params: { roomReservationId },
+        params: {roomReservationId},
       });
       console.log('Room reservation deleted successfully');
     } catch (error) {
@@ -53,7 +53,23 @@ class RoomService {
     }
   }
 
-  async reserveRoom(roomId: string, startTime: string, endTime: string): Promise<any>{
+  async getReservedTimeRanges(roomId: string, excludeReservationId?: string): Promise<any> {
+    try {
+      const response = await axiosInstance.get(
+        `${ROOM_RESERVATION_API_URL}/room/${roomId}/time-ranges`,
+        {
+          params: excludeReservationId ? {excludeReservationId} : {}
+        }
+      );
+      console.log('Reserved time ranges received:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching reserved time ranges:', error);
+      throw error;
+    }
+  }
+
+  async reserveRoom(roomId: string, startTime: string, endTime: string): Promise<any> {
     try {
       const response = await axiosInstance.post(
         `${ROOM_RESERVATION_API_URL}/${roomId}`,
@@ -72,6 +88,26 @@ class RoomService {
       return response.data;
     } catch (error) {
       console.error('Error reserving room:', error);
+      throw error;
+    }
+  }
+
+  async updateReservation(reservationId: string, newStartTime: string, newEndTime: string): Promise<any> {
+    try {
+      const response = await axiosInstance.put(
+        `${ROOM_RESERVATION_API_URL}/${reservationId}`,
+        null,
+        {
+          params: {
+            newStartTime,
+            newEndTime
+          },
+        }
+      );
+      console.log('Room reservation updated successfully', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating room reservation', error);
       throw error;
     }
   }

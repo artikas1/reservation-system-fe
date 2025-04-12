@@ -74,6 +74,7 @@
           <v-card-text class="text-h5">
             Automobiliai
           </v-card-text>
+
           <div class="d-flex justify-end">
             <v-select
               label="Filtrai"

@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router'
 import { registerPlugins } from '@/plugins'
 
+import '@vuepic/vue-datepicker/dist/main.css'
+
 import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 

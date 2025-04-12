@@ -66,6 +66,22 @@ class CarService {
     }
   }
 
+  async getReservedTimeRanges(carId: string, excludeReservationId?: string): Promise<any> {
+    try {
+      const response = await axiosInstance.get(
+        `${CAR_RESERVATION_API_URL}/car/${carId}/time-ranges`,
+        {
+          params: excludeReservationId ? { excludeReservationId } : {}
+        }
+      );
+      console.log('Reserved time ranges received:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching reserved time ranges:', error);
+      throw error;
+    }
+  }
+
   async reserveCar(carId: string, startTime: string, endTime: string): Promise<any>{
     try {
       const response = await axiosInstance.post(
@@ -85,6 +101,26 @@ class CarService {
       return response.data;
     } catch (error) {
       console.error('Error reserving car:', error);
+      throw error;
+    }
+  }
+
+  async updateReservation(reservationId: string, newStartTime: string, newEndTime: string): Promise<any> {
+    try {
+      const response = await axiosInstance.put(
+        `${CAR_RESERVATION_API_URL}/${reservationId}`,
+        null,
+        {
+          params: {
+            newStartTime,
+            newEndTime
+          },
+        }
+      );
+      console.log('Car reservation updated successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating car reservation:', error);
       throw error;
     }
   }
