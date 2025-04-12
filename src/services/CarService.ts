@@ -30,10 +30,10 @@ class CarService {
     }
   }
 
-  async getAvailableEcoCars(startTime: string, endTime: string): Promise<any> {
+  async getAvailableEcoCars(startTime: string, endTime: string, bodyType?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${CAR_API_BASE_URL}/available/eco`, {
-        params: { startTime, endTime },
+        params: { startTime, endTime, bodyType: bodyType }
       });
       console.log('Available eco-friendly cars received:', response.data);
       return response.data;

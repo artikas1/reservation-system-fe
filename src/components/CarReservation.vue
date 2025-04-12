@@ -2,46 +2,8 @@
   <v-container class="container ma-16 d-flex flex-wrap mx-auto" style="max-width: 71vw">
     <v-row class="d-flex flex-grow">
       <v-col cols="12" md="4" rounded="xl">
-        <v-card color="#F1F1F1" class="mb-5">
-          <v-card-text class="text-h6">
-            Automobilių tipas*
-          </v-card-text>
-          <v-select
-            label="Automobilių tipas"
-            multiple
-            :items="[ 'Sedanas', 'Universalas', 'Hečbekas', 'Minivenas']"
-            variant="outlined"
-            class="rounded ml-5 mr-13 mb-10"
-            hide-details="auto"
-            density="compact"
-            style="background-color: white"
-          ></v-select>
-        </v-card>
 
-        <v-card color="#F1F1F1" class="mb-5">
-          <v-card-text class="text-h6">
-            Vieta*
-          </v-card-text>
-          <v-text-field
-            label="Apskritis"
-            variant="outlined"
-            class="rounded mx-6 mb-5"
-            hide-details="auto"
-            density="compact"
-            style="background-color: white"
-          ></v-text-field>
-
-          <v-text-field
-            label="Adresas"
-            variant="outlined"
-            class="rounded mx-6 mb-10"
-            hide-details="auto"
-            density="compact"
-            style="background-color: white"
-          ></v-text-field>
-        </v-card>
-
-        <v-card color="#F1F1F1" class="mb-5" style="overflow: unset; z-index: 1">
+        <v-card color="#F1F1F1" class="mb-8" style="overflow: unset; z-index: 1">
           <v-card-text class="text-h6 mb-3">
             Data ir laikas*
           </v-card-text>
@@ -67,6 +29,42 @@
 
           </v-row>
         </v-card>
+
+        <v-card color="#F1F1F1" class="mb-5">
+          <v-card-text class="text-h6">
+            Automobilių tipas*
+          </v-card-text>
+          <v-select
+            v-model="selectedBodyType"
+            :items="bodyTypeOptions"
+            item-title="text"
+            item-value="value"
+            label="Automobilių tipas"
+            variant="outlined"
+            class="rounded ml-5 mr-13 mb-10"
+            hide-details="auto"
+            density="compact"
+            style="background-color: white"
+            clearable
+          ></v-select>
+        </v-card>
+
+        <v-card color="#F1F1F1" class="mb-0">
+          <v-card-text class="text-h6">
+            Vieta*
+          </v-card-text>
+
+          <v-text-field
+            label="Adresas"
+            variant="outlined"
+            class="rounded mx-6 mb-10"
+            hide-details="auto"
+            density="compact"
+            style="background-color: white"
+          ></v-text-field>
+        </v-card>
+
+
       </v-col>
 
       <v-col cols="12" md="8" class="d-flex flex-column">
@@ -89,7 +87,7 @@
 
           <v-card class="bg-white mx-6 all-reservations" style="overflow: auto">
 
-            <div v-if="startDate && endDate">
+            <div v-if="startDate && endDate && cars.length > 0">
               <ul>
                 <li v-for="car in cars" :key="car.id">
                   <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
@@ -162,6 +160,10 @@
               </ul>
             </div>
 
+            <div v-else-if="startDate && endDate" class="text-center pa-6 text-subtitle-1">
+              Šiuo metu nėra laisvų automobilių pagal pasirinktus kriterijus.
+            </div>
+
             <div v-else class="text-center pa-6 text-subtitle-1">
               Pasirinkite nuo - iki laiką
             </div>
@@ -183,8 +185,8 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import {mdiCarBack, mdiSprout} from "@mdi/js";
 import CarService from "@/services/CarService.ts";
 import ReviewService from "@/services/ReviewService";
-import { formatDateTime, formatForBackend } from "@/utils/dateFormatter";
-import { EntityType } from "@/types/EntityType";
+import {formatDateTime, formatForBackend} from "@/utils/dateFormatter";
+import {EntityType} from "@/types/EntityType";
 
 const cars = ref([]);
 const reviews = ref<Record<string, { content: string; createdAt: string }[]>>({});
@@ -195,32 +197,36 @@ const endDate = ref();
 
 const toast = useToast();
 
+const selectedBodyType = ref<string | null>(null);
+
+const bodyTypeOptions = [
+  {text: 'Hečbekas', value: 'HECBEKAS'},
+  {text: 'Sedanas', value: 'SEDANAS'},
+  {text: 'Universalas', value: 'UNIVERSALAS'},
+  {text: 'Minivenas', value: 'MINIVENAS'},
+];
+
 const showComments = (carId: string) => {
   visibleCommentId.value = visibleCommentId.value === carId ? null : carId;
 };
 
-watch([startDate, endDate], async ([newStart, newEnd]) => {
+watch([startDate, endDate, selectedBodyType], async ([newStart, newEnd, newBodyType]) => {
   if (newStart && newEnd) {
     try {
-      const formattedStart = formatForBackend(startDate.value);
-      const formattedEnd = formatForBackend(endDate.value);
+      const formattedStart = formatForBackend(newStart);
+      const formattedEnd = formatForBackend(newEnd);
 
-      //Fetch available cars
-      cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd);
+      cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd, newBodyType);
       console.log("Fetched available cars:", cars.value);
 
-      //Fetch all reviews in parallel
       const reviewPromises = cars.value.map(car =>
-        ReviewService.getReviewsByEntity(car.id, EntityType.CAR)
-          .catch(error => {
-            console.warn(`Failed to get reviews for car ${car.id}`, error);
-            return [] as Review[]; // Explicitly type the fallback
-          })
+        ReviewService.getReviewsByEntity(car.id, EntityType.CAR).catch(error => {
+          console.warn(`Failed to get reviews for car ${car.id}`, error);
+          return [];
+        })
       );
 
       const allReviews = await Promise.all(reviewPromises);
-
-      //Assign reviews to each car
       cars.value.forEach((car, index) => {
         reviews.value[car.id] = allReviews[index];
       });
@@ -250,8 +256,8 @@ const reserveCar = async (carId: string) => {
     toast.success('Automobilis sekmingai rezervuotas!');
     console.log('Reservation created:', response);
 
-    // Refresh the car list
-    cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd);
+    // Refresh cars
+    cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd, selectedBodyType.value);
 
   } catch (error) {
     toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));

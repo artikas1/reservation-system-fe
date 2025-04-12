@@ -32,19 +32,6 @@
 
         <div style="flex-basis: 100%; height: 0;"></div>
 
-        <!--        <VueDatePicker-->
-        <!--          v-model="dateRange"-->
-        <!--          locale="lt"-->
-        <!--          range-->
-        <!--          placeholder="Pasirinkite laikotarpį"-->
-        <!--          variant="outlined"-->
-        <!--          style="min-width: 140px; max-width: 410px; background-color: white;"-->
-        <!--          hide-details="auto"-->
-        <!--          density="compact"-->
-        <!--          class="rounded mb-4"-->
-        <!--          clearable-->
-        <!--        />-->
-
         <VueDatePicker
           label="Pradžios data"
           class="rounded"
@@ -111,7 +98,7 @@
                     </v-card-text>
                   </v-col>
                   <v-col cols="12" sm="4" class="text-right my-auto">
-                    <v-btn icon class="me-2" @click="showCommentBox(room.id, room.room.id, EntityType.ROOM)">
+                    <v-btn icon="" class="me-2" @click="showCommentBox(room.id, room.room.id, EntityType.ROOM)">
                       <svg-icon type="mdi" :path="mdiCommentOutline"></svg-icon>
                     </v-btn>
                   </v-col>
@@ -173,7 +160,7 @@
                     </v-card-text>
                   </v-col>
                   <v-col cols="12" sm="4" class="text-right my-auto">
-                    <v-btn icon class="me-2"
+                    <v-btn icon="" class="me-2"
                            @click="showCommentBox(equipment.id, equipment.equipment.id, EntityType.EQUIPMENT)">
                       <svg-icon type="mdi" :path="mdiCommentOutline"></svg-icon>
                     </v-btn>
@@ -239,7 +226,7 @@
                     </v-card-text>
                   </v-col>
                   <v-col cols="12" sm="4" class="text-right my-auto">
-                    <v-btn icon class="me-2" @click="showCommentBox(car.id, car.car.id, EntityType.CAR)">
+                    <v-btn icon="" class="me-2" @click="showCommentBox(car.id, car.car.id, EntityType.CAR)">
                       <svg-icon type="mdi" :path="mdiCommentOutline"></svg-icon>
                     </v-btn>
                   </v-col>
