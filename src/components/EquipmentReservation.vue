@@ -2,22 +2,54 @@
   <v-container class="container ma-16 d-flex flex-wrap mx-auto" style="max-width: 71vw">
     <v-row class="d-flex flex-grow">
       <v-col cols="12" md="4" rounded="xl">
+
+        <v-card color="#F1F1F1" class="mb-5" style="overflow: unset; z-index: 1">
+          <v-card-text class="text-h6 mb-3">
+            Data ir laikas*
+          </v-card-text>
+          <v-row class="d-flex mb-5">
+
+            <VueDatePicker
+              label="Pradžios data"
+              class="rounded mb-5 pl-6 pr-6"
+              v-model="startDate"
+              locale="lt"
+              :enable-time-picker="true"
+              :min-date="new Date()"
+            ></VueDatePicker>
+
+            <VueDatePicker
+              label="Pabaigos data"
+              class="rounded mb-10 pl-6 pr-6"
+              v-model="endDate"
+              locale="lt"
+              :enable-time-picker="true"
+              :min-date="startDate"
+            ></VueDatePicker>
+
+          </v-row>
+        </v-card>
+
         <v-card color="#F1F1F1" class="mb-5">
           <v-card-text class="text-h6">
             Įrangos tipas*
           </v-card-text>
           <v-select
+            v-model="selectedEquipmentType"
+            :items="equipmentTypeOptions"
+            item-title="text"
+            item-value="value"
             label="Įrangos tipas"
-            :items="['Nešiojamas kompiuteris', 'Plančetinis kompiuteris', 'Web-kamera', 'Projektorius', 'Klaviatura', 'Pelė']"
             variant="outlined"
-            class="rounded ml-5 mr-13 mb-10"
+            class="rounded ml-5 mr-5 mb-10"
             hide-details="auto"
             density="compact"
             style="background-color: white"
+            clearable
           ></v-select>
         </v-card>
 
-        <v-card color="#F1F1F1" class="mb-5">
+        <v-card color="#F1F1F1" class="mb-0">
           <v-card-text class="text-h6">
             Vieta*
           </v-card-text>
@@ -40,32 +72,6 @@
           ></v-text-field>
         </v-card>
 
-        <v-card color="#F1F1F1" class="mb-5" style="overflow: unset; z-index: 1">
-          <v-card-text class="text-h6">
-            Data ir laikas*
-          </v-card-text>
-          <v-row class="d-flex mb-10">
-
-            <VueDatePicker
-              label="Pradžios data"
-              class="rounded mb-5 pl-6 pr-6"
-              v-model="startDate"
-              locale="lt"
-              :enable-time-picker="true"
-              :min-date="new Date()"
-            ></VueDatePicker>
-
-            <VueDatePicker
-              label="Pabaigos data"
-              class="rounded mb-10 pl-6 pr-6"
-              v-model="endDate"
-              locale="lt"
-              :enable-time-picker="true"
-              :min-date="startDate"
-            ></VueDatePicker>
-
-          </v-row>
-        </v-card>
       </v-col>
 
       <v-col cols="12" md="8" class="d-flex flex-column">
@@ -87,10 +93,9 @@
 
           <v-card class="bg-white mx-6 all-reservations" style="overflow: auto">
 
-            <div v-if="startDate && endDate">
-
+            <div v-if="startDate && endDate && equipment.length > 0">
               <ul>
-                <li v-for="equipment in equipment" :key="equipment.id">
+                <li v-for="item in equipment" :key="item.id">
                   <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
                     <v-card-text>
                       <v-row>
@@ -100,17 +105,17 @@
                         </v-col>
                         <v-col cols="12" sm="6" lg="7">
                           <v-card-text class="text-h6 pa-1">
-                            {{ equipment.name }}
+                            {{ item.name }}
                           </v-card-text>
                           <v-card-text class="text-subtitle-2 pa-1">
-                            {{ equipment.manufacturer }}
-                            {{ equipment.model }}
+                            {{ item.manufacturer }}
+                            {{ item.model }}
                           </v-card-text>
                         </v-col>
 
                         <v-col cols="12" sm="4" class="text-right my-auto">
                           <v-btn class="reserve text-white" style="text-transform: none"
-                                 @click="reserveEquipment(equipment.id)">
+                                 @click="reserveEquipment(item.id)">
                             <p class="mx-2">Rezervuoti</p>
                           </v-btn>
                         </v-col>
@@ -118,18 +123,18 @@
                           cols="12"
                           sm="4"
                           class="my-auto"
-                          v-if="reviews[equipment.id]?.length > 0"
+                          v-if="reviews[item.id]?.length > 0"
                         >
-                          <v-btn @click="showComments(equipment.id)">
+                          <v-btn @click="showComments(item.id)">
                             <p class="mx-2">Komentarai</p>
                           </v-btn>
                         </v-col>
                       </v-row>
                       <v-expand-transition>
-                        <div v-if="visibleCommentId === equipment.id" class="px-4 pb-4 pt-1 mt-6">
-                          <div v-if="reviews[equipment.id]?.length">
+                        <div v-if="visibleCommentId === item.id" class="px-4 pb-4 pt-1 mt-6">
+                          <div v-if="reviews[item.id]?.length">
                             <div
-                              v-for="(review, index) in reviews[equipment.id]"
+                              v-for="(review, index) in reviews[item.id]"
                               :key="index"
                               class="mb-2"
                             >
@@ -148,6 +153,10 @@
                   </v-card>
                 </li>
               </ul>
+            </div>
+
+            <div v-else-if="startDate && endDate" class="text-center pa-6 text-subtitle-1">
+              Šiuo metu nėra laisvos įrangos pagal pasirinktus kriterijus.
             </div>
 
             <div v-else class="text-center pa-6 text-subtitle-1">
@@ -169,8 +178,8 @@ import SvgIcon from "@jamescoyle/vue-icon";
 import {mdiCamera} from "@mdi/js";
 import EquipmentService from "@/services/EquipmentService.ts";
 import ReviewService from "@/services/ReviewService";
-import { formatDateTime, formatForBackend } from "@/utils/dateFormatter";
-import { EntityType } from "@/types/EntityType";
+import {formatDateTime, formatForBackend} from "@/utils/dateFormatter";
+import {EntityType} from "@/types/EntityType";
 
 const equipment = ref([]);
 const reviews = ref<Record<string, { content: string; createdAt: string }[]>>({});
@@ -181,18 +190,30 @@ const endDate = ref();
 
 const toast = useToast();
 
+const selectedEquipmentType = ref<string | null>(null);
+
+const equipmentTypeOptions = [
+  {text: 'Klaviatura', value: 'KLAVIATURA'},
+  {text: 'Nešiojamas kompiuteris', value: 'NESIOJAMAS_KOMPIUTERIS'},
+  {text: 'Pelė', value: 'PELE'},
+  {text: 'Plančetinis kompiuteris', value: 'PLANCETINIS_KOMPIUTERIS'},
+  {text: 'Projektorius', value: 'PROJEKTORIUS'},
+  {text: 'Radio', value: 'RADIO'},
+  {text: 'Web kamera', value: 'WEB_KAMERA'},
+]
+
 const showComments = (equipmentId: string) => {
   visibleCommentId.value = visibleCommentId.value === equipmentId ? null : equipmentId;
 };
 
-watch([startDate, endDate], async ([newStart, newEnd]) => {
+watch([startDate, endDate, selectedEquipmentType], async ([newStart, newEnd, newEquipmentType]) => {
   if (newStart && newEnd) {
     try {
       const formattedStart = formatForBackend(startDate.value);
       const formattedEnd = formatForBackend(endDate.value);
 
       //Fetch available equipment
-      equipment.value = await EquipmentService.getAvailableEquipment(formattedStart, formattedEnd);
+      equipment.value = await EquipmentService.getAvailableEquipment(formattedStart, formattedEnd, newEquipmentType);
       console.log("Fetched available equipment:", equipment.value);
 
       //Fetch all reviews in parallel
@@ -212,7 +233,7 @@ watch([startDate, endDate], async ([newStart, newEnd]) => {
       });
 
     } catch (error) {
-      toast.error("Klaida gaunant patalpas");
+      toast.error("Klaida gaunant įrangą");
       console.error("Error fetching available equipment:", error);
     }
   } else {
@@ -236,7 +257,7 @@ const reserveEquipment = async (equipmentId: string) => {
     console.log('Reservation created:', response);
 
     // Refresh the equipment list
-    equipment.value = await EquipmentService.getAvailableEquipment(formattedStart, formattedEnd);
+    equipment.value = await EquipmentService.getAvailableEquipment(formattedStart, formattedEnd, selectedEquipmentType.value);
 
   } catch (error) {
     toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));

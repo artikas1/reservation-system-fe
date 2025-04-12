@@ -17,10 +17,10 @@ class CarService {
     }
   }
 
-  async getAvailableCars(startTime: string, endTime: string): Promise<any> {
+  async getAvailableCars(startTime: string, endTime: string, bodyType?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${CAR_API_BASE_URL}/available`, {
-        params: { startTime, endTime },
+        params: { startTime, endTime, bodyType: bodyType },
       });
       console.log('Available cars received:', response.data);
       return response.data;

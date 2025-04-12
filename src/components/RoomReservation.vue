@@ -50,7 +50,7 @@
 
         </v-card>
 
-        <v-card color="#F1F1F1" class="mb-5">
+        <v-card color="#F1F1F1" class="mb-0">
           <v-card-text class="text-h6">
             Vieta*
           </v-card-text>
