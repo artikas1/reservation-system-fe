@@ -53,23 +53,20 @@
           <v-card-text class="text-h6">
             Vieta*
           </v-card-text>
-          <v-text-field
-            label="Apskritis"
-            variant="outlined"
-            class="rounded mx-6 mb-5"
-            hide-details="auto"
-            density="compact"
-            style="background-color: white"
-          ></v-text-field>
 
-          <v-text-field
+          <v-select
+            v-model="selectedAddress"
+            :items="addressOptions"
+            item-title="text"
+            item-value="value"
             label="Adresas"
             variant="outlined"
             class="rounded mx-6 mb-10"
             hide-details="auto"
             density="compact"
             style="background-color: white"
-          ></v-text-field>
+            clearable
+          ></v-select>
         </v-card>
 
       </v-col>
@@ -110,6 +107,8 @@
                           <v-card-text class="text-subtitle-2 pa-1">
                             {{ item.manufacturer }}
                             {{ item.model }}
+                            <br/>
+                            <strong>{{ getAddressText(item.address) }}</strong> <!-- or .replace('_', ' ') for nicer display -->
                           </v-card-text>
                         </v-col>
 
@@ -191,6 +190,7 @@ const endDate = ref();
 const toast = useToast();
 
 const selectedEquipmentType = ref<string | null>(null);
+const selectedAddress = ref<string | null>(null);
 
 const equipmentTypeOptions = [
   {text: 'Klaviatura', value: 'KLAVIATURA'},
@@ -202,18 +202,26 @@ const equipmentTypeOptions = [
   {text: 'Web kamera', value: 'WEB_KAMERA'},
 ]
 
+const addressOptions = [
+  {text: 'Akademijos g. 7', value: 'AKADEMIJOS_G_7'},
+  {text: 'Gedimino pr. 9', value: 'GEDIMINO_PR_9'},
+  {text: 'Konstitucijos pr. 12', value: 'KONSTITUCIJOS_PR_12'},
+  {text: 'Neries g. 3', value: 'NERIES_G_3'},
+  {text: 'Saulėtekio al. 15', value: 'SAULETEKIO_AL_15'}
+];
+
 const showComments = (equipmentId: string) => {
   visibleCommentId.value = visibleCommentId.value === equipmentId ? null : equipmentId;
 };
 
-watch([startDate, endDate, selectedEquipmentType], async ([newStart, newEnd, newEquipmentType]) => {
+watch([startDate, endDate, selectedEquipmentType, selectedAddress], async ([newStart, newEnd, newEquipmentType, newAddress]) => {
   if (newStart && newEnd) {
     try {
       const formattedStart = formatForBackend(startDate.value);
       const formattedEnd = formatForBackend(endDate.value);
 
       //Fetch available equipment
-      equipment.value = await EquipmentService.getAvailableEquipment(formattedStart, formattedEnd, newEquipmentType);
+      equipment.value = await EquipmentService.getAvailableEquipment(formattedStart, formattedEnd, newEquipmentType, newAddress);
       console.log("Fetched available equipment:", equipment.value);
 
       //Fetch all reviews in parallel
@@ -257,12 +265,17 @@ const reserveEquipment = async (equipmentId: string) => {
     console.log('Reservation created:', response);
 
     // Refresh the equipment list
-    equipment.value = await EquipmentService.getAvailableEquipment(formattedStart, formattedEnd, selectedEquipmentType.value);
+    equipment.value = await EquipmentService.getAvailableEquipment(formattedStart, formattedEnd, selectedEquipmentType.value, selectedAddress.value);
 
   } catch (error) {
     toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));
     console.error('Reservation error:', error);
   }
+};
+
+const getAddressText = (addressValue: string): string => {
+  const match = addressOptions.find(option => option.value === addressValue);
+  return match ? match.text : addressValue;
 };
 
 </script>

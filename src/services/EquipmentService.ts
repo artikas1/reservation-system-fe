@@ -17,10 +17,10 @@ class EquipmentService {
     }
   }
 
-  async getAvailableEquipment(startTime: string, endTime: string, equipmentType?: string): Promise<any> {
+  async getAvailableEquipment(startTime: string, endTime: string, equipmentType?: string, address?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${EQUIPMENT_API_BASE_URL}/available`, {
-        params: { startTime, endTime, equipmentType: equipmentType }
+        params: { startTime, endTime, equipmentType: equipmentType, address: address }
       });
       console.log('Available equipment received:', response.data);
       return response.data;

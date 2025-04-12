@@ -54,14 +54,19 @@
             Vieta*
           </v-card-text>
 
-          <v-text-field
+          <v-select
+            v-model="selectedAddress"
+            :items="addressOptions"
+            item-title="text"
+            item-value="value"
             label="Adresas"
             variant="outlined"
             class="rounded mx-6 mb-10"
             hide-details="auto"
             density="compact"
             style="background-color: white"
-          ></v-text-field>
+            clearable
+          ></v-select>
         </v-card>
 
 
@@ -116,7 +121,9 @@
                           </v-tooltip>
 
                           <v-card-text class="text-subtitle-2 pa-1">
-                            {{ car.bodyType }}
+                            {{ getBodyTypeText(car.bodyType) }}
+                            <br/>
+                            <strong>{{ getAddressText(car.address) }}</strong>
                           </v-card-text>
                         </v-col>
                         <v-col cols="12" sm="4" class="text-right my-auto">
@@ -198,6 +205,7 @@ const endDate = ref();
 const toast = useToast();
 
 const selectedBodyType = ref<string | null>(null);
+const selectedAddress = ref<string | null>(null);
 
 const bodyTypeOptions = [
   {text: 'Hečbekas', value: 'HECBEKAS'},
@@ -206,17 +214,25 @@ const bodyTypeOptions = [
   {text: 'Minivenas', value: 'MINIVENAS'},
 ];
 
+const addressOptions = [
+  {text: 'Akademijos g. 7', value: 'AKADEMIJOS_G_7'},
+  {text: 'Gedimino pr. 9', value: 'GEDIMINO_PR_9'},
+  {text: 'Konstitucijos pr. 12', value: 'KONSTITUCIJOS_PR_12'},
+  {text: 'Neries g. 3', value: 'NERIES_G_3'},
+  {text: 'Saulėtekio al. 15', value: 'SAULETEKIO_AL_15'}
+];
+
 const showComments = (carId: string) => {
   visibleCommentId.value = visibleCommentId.value === carId ? null : carId;
 };
 
-watch([startDate, endDate, selectedBodyType], async ([newStart, newEnd, newBodyType]) => {
+watch([startDate, endDate, selectedBodyType, selectedAddress], async ([newStart, newEnd, newBodyType, newAddress]) => {
   if (newStart && newEnd) {
     try {
       const formattedStart = formatForBackend(newStart);
       const formattedEnd = formatForBackend(newEnd);
 
-      cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd, newBodyType);
+      cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd, newBodyType, newAddress);
       console.log("Fetched available cars:", cars.value);
 
       //Fetch all reviews in parallel
@@ -259,12 +275,22 @@ const reserveCar = async (carId: string) => {
     console.log('Reservation created:', response);
 
     // Refresh cars
-    cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd, selectedBodyType.value);
+    cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd, selectedBodyType.value, selectedAddress.value);
 
   } catch (error) {
     toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));
     console.error('Reservation error:', error);
   }
+};
+
+const getAddressText = (addressValue: string): string => {
+  const match = addressOptions.find(option => option.value === addressValue);
+  return match ? match.text : addressValue;
+};
+
+const getBodyTypeText = (bodyTypeValue: string): string => {
+  const match = bodyTypeOptions.find(option => option.value === bodyTypeValue);
+  return match ? match.text : bodyTypeValue;
 };
 
 </script>

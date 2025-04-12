@@ -17,10 +17,10 @@ class CarService {
     }
   }
 
-  async getAvailableCars(startTime: string, endTime: string, bodyType?: string): Promise<any> {
+  async getAvailableCars(startTime: string, endTime: string, bodyType?: string, address?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${CAR_API_BASE_URL}/available`, {
-        params: { startTime, endTime, bodyType: bodyType },
+        params: { startTime, endTime, bodyType: bodyType, address: address }
       });
       console.log('Available cars received:', response.data);
       return response.data;
@@ -30,10 +30,10 @@ class CarService {
     }
   }
 
-  async getAvailableEcoCars(startTime: string, endTime: string, bodyType?: string): Promise<any> {
+  async getAvailableEcoCars(startTime: string, endTime: string, bodyType?: string, address?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${CAR_API_BASE_URL}/available/eco`, {
-        params: { startTime, endTime, bodyType: bodyType }
+        params: { startTime, endTime, bodyType: bodyType, address: address }
       });
       console.log('Available eco-friendly cars received:', response.data);
       return response.data;

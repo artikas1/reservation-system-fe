@@ -17,10 +17,10 @@ class RoomService {
     }
   }
 
-  async getAvailableRooms(startTime: string, endTime: string, roomType?: string): Promise<any> {
+  async getAvailableRooms(startTime: string, endTime: string, roomType?: string, address?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${ROOM_API_BASE_URL}/available`, {
-        params: {startTime, endTime, roomType: roomType }
+        params: {startTime, endTime, roomType: roomType, address: address }
       });
       console.log('Available rooms received:', response.data);
       return response.data;

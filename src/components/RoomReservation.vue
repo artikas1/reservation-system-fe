@@ -55,43 +55,21 @@
             Vieta*
           </v-card-text>
 
-          <v-text-field
-            label="Apskritis"
-            variant="outlined"
-            class="rounded mx-6 mb-5"
-            hide-details="auto"
-            density="compact"
-            style="background-color: white"
-          ></v-text-field>
-
-          <v-text-field
+          <v-select
+            v-model="selectedAddress"
+            :items="addressOptions"
+            item-title="text"
+            item-value="value"
             label="Adresas"
             variant="outlined"
             class="rounded mx-6 mb-10"
             hide-details="auto"
             density="compact"
             style="background-color: white"
-          ></v-text-field>
+            clearable
+          ></v-select>
+
         </v-card>
-
-        <!--        <v-card color="#F1F1F1">-->
-        <!--          <v-card-text class="text-h6">-->
-        <!--            Papildomi poreikiai-->
-        <!--          </v-card-text>-->
-
-        <!--          <v-select-->
-        <!--            v-model="value"-->
-        <!--            :items="items2"-->
-        <!--            variant="outlined"-->
-        <!--            class="mx-6 mb-10"-->
-        <!--            chips-->
-        <!--            label="Poreikiai"-->
-        <!--            multiple-->
-        <!--            hide-details="auto"-->
-        <!--            density="compact"-->
-        <!--            style="background-color: white"-->
-        <!--          ></v-select>-->
-        <!--        </v-card>-->
       </v-col>
 
       <v-col cols="12" md="8" class="d-flex flex-column">
@@ -129,6 +107,8 @@
                           </v-card-text>
                           <v-card-text class="text-subtitle-2 pa-1">
                             {{ room.description }}
+                            <br/>
+                            <strong>{{ getAddressText(room.address) }}</strong> <!-- or .replace('_', ' ') for nicer display -->
                           </v-card-text>
                         </v-col>
                         <v-col cols="12" sm="4" class="text-right my-auto">
@@ -211,6 +191,7 @@ const endDate = ref();
 const toast = useToast();
 
 const selectedRoomType = ref<string | null>(null);
+const selectedAddress = ref<string | null>(null);
 
 const roomTypeOptions = [
   {text: 'Darbo', value: 'DARBO'},
@@ -218,17 +199,25 @@ const roomTypeOptions = [
   {text: 'Laisvalaikio', value: 'LAISVALAIKIO'},
 ];
 
+const addressOptions = [
+  {text: 'Akademijos g. 7', value: 'AKADEMIJOS_G_7'},
+  {text: 'Gedimino pr. 9', value: 'GEDIMINO_PR_9'},
+  {text: 'Konstitucijos pr. 12', value: 'KONSTITUCIJOS_PR_12'},
+  {text: 'Neries g. 3', value: 'NERIES_G_3'},
+  {text: 'Saulėtekio al. 15', value: 'SAULETEKIO_AL_15'}
+];
+
 const showComments = (roomId: string) => {
   visibleCommentId.value = visibleCommentId.value === roomId ? null : roomId;
 };
 
-watch([startDate, endDate, selectedRoomType], async ([newStart, newEnd, newRoomType]) => {
+watch([startDate, endDate, selectedRoomType, selectedAddress], async ([newStart, newEnd, newRoomType, newAddress]) => {
   if (newStart && newEnd) {
     try {
       const formattedStart = formatForBackend(startDate.value);
       const formattedEnd = formatForBackend(endDate.value);
 
-      rooms.value = await RoomService.getAvailableRooms(formattedStart, formattedEnd, newRoomType);
+      rooms.value = await RoomService.getAvailableRooms(formattedStart, formattedEnd, newRoomType, newAddress);
       console.log("Fetched available rooms:", rooms.value);
 
       //Fetch all reviews in parallel
@@ -272,12 +261,17 @@ const reserveRoom = async (roomId: string) => {
     console.log('Reservation created:', response);
 
     //Refresh the room list
-    rooms.value = await RoomService.getAvailableRooms(formattedStart, formattedEnd, selectedRoomType.value);
+    rooms.value = await RoomService.getAvailableRooms(formattedStart, formattedEnd, selectedRoomType.value, selectedAddress.value);
 
   } catch (error) {
     toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));
     console.error('Reservation error:', error);
   }
+};
+
+const getAddressText = (addressValue: string): string => {
+  const match = addressOptions.find(option => option.value === addressValue);
+  return match ? match.text : addressValue;
 };
 
 </script>
