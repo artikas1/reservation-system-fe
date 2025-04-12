@@ -41,7 +41,7 @@
             item-value="value"
             label="Automobilių tipas"
             variant="outlined"
-            class="rounded ml-5 mr-13 mb-10"
+            class="rounded ml-5 mr-5 mb-10"
             hide-details="auto"
             density="compact"
             style="background-color: white"
@@ -219,6 +219,7 @@ watch([startDate, endDate, selectedBodyType], async ([newStart, newEnd, newBodyT
       cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd, newBodyType);
       console.log("Fetched available cars:", cars.value);
 
+      //Fetch all reviews in parallel
       const reviewPromises = cars.value.map(car =>
         ReviewService.getReviewsByEntity(car.id, EntityType.CAR).catch(error => {
           console.warn(`Failed to get reviews for car ${car.id}`, error);
@@ -227,6 +228,7 @@ watch([startDate, endDate, selectedBodyType], async ([newStart, newEnd, newBodyT
       );
 
       const allReviews = await Promise.all(reviewPromises);
+      //Assign reviews to each car
       cars.value.forEach((car, index) => {
         reviews.value[car.id] = allReviews[index];
       });

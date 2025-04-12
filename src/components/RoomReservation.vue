@@ -2,19 +2,52 @@
   <v-container class="container ma-16 d-flex flex-wrap mx-auto" style="max-width: 71vw">
     <v-row class="d-flex flex-grow">
       <v-col cols="12" md="4" rounded="xl">
+
+        <v-card color="#F1F1F1" class="mb-8" style="overflow: unset; z-index: 1"> <!-- mb-8 because of overflow -->
+          <v-card-text class="text-h6 mb-3">
+            Data ir laikas*
+          </v-card-text>
+          <v-row class="d-flex">
+            <VueDatePicker
+              label="Pradžios data"
+              class="rounded mb-5 pl-6 pr-6"
+              v-model="startDate"
+              locale="lt"
+              :enable-time-picker="true"
+              :min-date="new Date()"
+            ></VueDatePicker>
+
+            <VueDatePicker
+              label="Pabaigos data"
+              class="rounded mb-10 pl-6 pr-6"
+              v-model="endDate"
+              locale="lt"
+              :enable-time-picker="true"
+              :min-date="startDate"
+            ></VueDatePicker>
+
+          </v-row>
+        </v-card>
+
         <v-card color="#F1F1F1" class="mb-5">
           <v-card-text class="text-h6">
             Patalpų tipas*
           </v-card-text>
+
           <v-select
+            v-model="selectedRoomType"
+            :items="roomTypeOptions"
+            item-title="text"
+            item-value="value"
             label="Patalpų tipas"
-            :items="['Darbo vietos', 'Darbo vietos1', 'Darbo vietos2', 'Darbo vietos3', 'Darbo vietos4', 'Darbo vietos5']"
             variant="outlined"
-            class="rounded ml-5 mr-13 mb-10"
+            class="rounded ml-5 mr-5 mb-10"
             hide-details="auto"
             density="compact"
             style="background-color: white"
+            clearable
           ></v-select>
+
         </v-card>
 
         <v-card color="#F1F1F1" class="mb-5">
@@ -39,32 +72,6 @@
             density="compact"
             style="background-color: white"
           ></v-text-field>
-        </v-card>
-
-        <v-card color="#F1F1F1" class="mb-8" style="overflow: unset; z-index: 1"> <!-- mb-8 because of overflow -->
-          <v-card-text class="text-h6">
-            Data ir laikas*
-          </v-card-text>
-          <v-row class="d-flex">
-            <VueDatePicker
-              label="Pradžios data"
-              class="rounded mb-5 pl-6 pr-6"
-              v-model="startDate"
-              locale="lt"
-              :enable-time-picker="true"
-              :min-date="new Date()"
-            ></VueDatePicker>
-
-            <VueDatePicker
-              label="Pabaigos data"
-              class="rounded mb-10 pl-6 pr-6"
-              v-model="endDate"
-              locale="lt"
-              :enable-time-picker="true"
-              :min-date="startDate"
-            ></VueDatePicker>
-
-          </v-row>
         </v-card>
 
         <!--        <v-card color="#F1F1F1">-->
@@ -106,7 +113,7 @@
 
           <v-card class="bg-white mx-6 all-reservations" style="overflow: auto">
 
-            <div v-if="startDate && endDate">
+            <div v-if="startDate && endDate && rooms.length > 0">
               <ul>
                 <li v-for="room in rooms" :key="room.id">
                   <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
@@ -165,6 +172,10 @@
               </ul>
             </div>
 
+            <div v-else-if="startDate && endDate" class="text-center pa-6 text-subtitle-1">
+              Šiuo metu nėra laisvų patalpų pagal pasirinktus kriterijus.
+            </div>
+
             <div v-else class="text-center pa-6 text-subtitle-1">
               Pasirinkite nuo - iki laiką
             </div>
@@ -173,7 +184,6 @@
         </v-card>
       </v-col>
     </v-row>
-    <!--    <VueDatePicker v-model="date" locale="lt" style="z-index: 10000"></VueDatePicker>-->
 
   </v-container>
 </template>
@@ -200,18 +210,25 @@ const endDate = ref();
 
 const toast = useToast();
 
+const selectedRoomType = ref<string | null>(null);
+
+const roomTypeOptions = [
+  {text: 'Darbo', value: 'DARBO'},
+  {text: 'Susitikimų', value: 'SUSITIKIMU'},
+  {text: 'Laisvalaikio', value: 'LAISVALAIKIO'},
+];
+
 const showComments = (roomId: string) => {
   visibleCommentId.value = visibleCommentId.value === roomId ? null : roomId;
 };
 
-watch([startDate, endDate], async ([newStart, newEnd]) => {
+watch([startDate, endDate, selectedRoomType], async ([newStart, newEnd, newRoomType]) => {
   if (newStart && newEnd) {
     try {
       const formattedStart = formatForBackend(startDate.value);
       const formattedEnd = formatForBackend(endDate.value);
 
-      //Fetch available rooms
-      rooms.value = await RoomService.getAvailableRooms(formattedStart, formattedEnd);
+      rooms.value = await RoomService.getAvailableRooms(formattedStart, formattedEnd, newRoomType);
       console.log("Fetched available rooms:", rooms.value);
 
       //Fetch all reviews in parallel
@@ -219,12 +236,11 @@ watch([startDate, endDate], async ([newStart, newEnd]) => {
         ReviewService.getReviewsByEntity(room.id, EntityType.ROOM)
           .catch(error => {
             console.warn(`Failed to get reviews for room ${room.id}`, error);
-            return [] as Review[]; // Explicitly type the fallback
+            return []; // Explicitly type the fallback
           })
       );
 
       const allReviews = await Promise.all(reviewPromises);
-
       //Assign reviews to each room
       rooms.value.forEach((room, index) => {
         reviews.value[room.id] = allReviews[index];
@@ -256,7 +272,7 @@ const reserveRoom = async (roomId: string) => {
     console.log('Reservation created:', response);
 
     //Refresh the room list
-    rooms.value = await RoomService.getAvailableRooms(formattedStart, formattedEnd);
+    rooms.value = await RoomService.getAvailableRooms(formattedStart, formattedEnd, selectedRoomType.value);
 
   } catch (error) {
     toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));
