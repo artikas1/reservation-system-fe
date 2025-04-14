@@ -99,8 +99,7 @@
                     <v-card-text>
                       <v-row>
                         <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
-                          <svg-icon type="mdi" :path="mdiCarBack"
-                                    style="color: #27424B; height: 40px; width: 38px"></svg-icon>
+                          <v-icon color="#27424B" size="36">mdi-car-back</v-icon>
                         </v-col>
                         <v-col cols="12" sm="6" lg="7">
                           <v-card-text class="text-h6 pa-1">
@@ -109,13 +108,15 @@
 
                           <v-tooltip location="top">
                             <template #activator="{ props }">
-                              <svg-icon
+                              <v-icon
                                 v-if="car.isEcoFriendly"
                                 v-bind="props"
-                                type="mdi"
-                                :path="mdiSprout"
-                                style="color: green; margin-left: 8px; height: 24px; width: 24px;"
-                              />
+                                color="green"
+                                size="24"
+                                style="margin-left: 8px;"
+                              >
+                                mdi-sprout
+                              </v-icon>
                             </template>
                             <span>Ekologiškesnis pasirinkimas</span>
                           </v-tooltip>
@@ -188,8 +189,6 @@ import {ref, watch} from "vue";
 import {useToast} from 'vue-toastification';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import SvgIcon from "@jamescoyle/vue-icon";
-import {mdiCarBack, mdiSprout} from "@mdi/js";
 import CarService from "@/services/CarService.ts";
 import ReviewService from "@/services/ReviewService";
 import {formatDateTime, formatForBackend} from "@/utils/dateFormatter";

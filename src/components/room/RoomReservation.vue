@@ -3,12 +3,11 @@
     <v-row class="d-flex flex-grow">
       <v-col cols="12" md="4" rounded="xl">
 
-        <v-card color="#F1F1F1" class="mb-5" style="overflow: unset; z-index: 1">
+        <v-card color="#F1F1F1" class="mb-8" style="overflow: unset; z-index: 1"> <!-- mb-8 because of overflow -->
           <v-card-text class="text-h6 mb-3">
             Data ir laikas*
           </v-card-text>
-          <v-row class="d-flex mb-5">
-
+          <v-row class="d-flex">
             <VueDatePicker
               label="Pradžios data"
               class="rounded mb-5 pl-6 pr-6"
@@ -32,14 +31,15 @@
 
         <v-card color="#F1F1F1" class="mb-5">
           <v-card-text class="text-h6">
-            Įrangos tipas*
+            Patalpų tipas*
           </v-card-text>
+
           <v-select
-            v-model="selectedEquipmentType"
-            :items="equipmentTypeOptions"
+            v-model="selectedRoomType"
+            :items="roomTypeOptions"
             item-title="text"
             item-value="value"
-            label="Įrangos tipas"
+            label="Patalpų tipas"
             variant="outlined"
             class="rounded ml-5 mr-5 mb-10"
             hide-details="auto"
@@ -47,6 +47,7 @@
             style="background-color: white"
             clearable
           ></v-select>
+
         </v-card>
 
         <v-card color="#F1F1F1" class="mb-0">
@@ -67,21 +68,21 @@
             style="background-color: white"
             clearable
           ></v-select>
-        </v-card>
 
+        </v-card>
       </v-col>
 
       <v-col cols="12" md="8" class="d-flex flex-column">
         <v-card color="#F1F1F1" class="flex-grow right-clm">
           <v-card-text class="text-h5">
-            Įranga
+            Patalpos
           </v-card-text>
           <div class="d-flex justify-end">
             <v-select
               label="Filtrai"
               :items="['Rūšiuoti pagal datą', 'Rūšiuoti pagal adresą A-Z', 'Rūšiuoti pagal adresą Z-A']"
               variant="outlined"
-              class="rounded ml-5 mr-5 align-self-end mb-3"
+              class="rounded mr-5 align-self-end mb-3"
               style="max-width: 140px; font-size: 12px; background-color: white"
               hide-details="auto"
               density="compact"
@@ -90,31 +91,27 @@
 
           <v-card class="bg-white mx-6 all-reservations" style="overflow: auto">
 
-            <div v-if="startDate && endDate && equipment.length > 0">
+            <div v-if="startDate && endDate && rooms.length > 0">
               <ul>
-                <li v-for="item in equipment" :key="item.id">
+                <li v-for="room in rooms" :key="room.id">
                   <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
                     <v-card-text>
                       <v-row>
                         <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
-                          <svg-icon type="mdi" :path="mdiCamera"
-                                    style="color: #27424B; height: 40px; width: 38px"></svg-icon>
+                          <v-icon color="#27424B" size="36">mdi-chair-rolling</v-icon>
                         </v-col>
                         <v-col cols="12" sm="6" lg="7">
                           <v-card-text class="text-h6 pa-1">
-                            {{ item.name }}
+                            {{ room.name }}
                           </v-card-text>
                           <v-card-text class="text-subtitle-2 pa-1">
-                            {{ item.manufacturer }}
-                            {{ item.model }}
+                            {{ room.description }}
                             <br/>
-                            <strong>{{ getAddressText(item.address) }}</strong> <!-- or .replace('_', ' ') for nicer display -->
+                            <strong>{{ getAddressText(room.address) }}</strong> <!-- or .replace('_', ' ') for nicer display -->
                           </v-card-text>
                         </v-col>
-
                         <v-col cols="12" sm="4" class="text-right my-auto">
-                          <v-btn class="reserve text-white" style="text-transform: none"
-                                 @click="reserveEquipment(item.id)">
+                          <v-btn class="reserve text-white" style="text-transform: none" @click="reserveRoom(room.id)">
                             <p class="mx-2">Rezervuoti</p>
                           </v-btn>
                         </v-col>
@@ -122,18 +119,18 @@
                           cols="12"
                           sm="4"
                           class="my-auto"
-                          v-if="reviews[item.id]?.length > 0"
+                          v-if="reviews[room.id]?.length > 0"
                         >
-                          <v-btn @click="showComments(item.id)">
+                          <v-btn @click="showComments(room.id)">
                             <p class="mx-2">Komentarai</p>
                           </v-btn>
                         </v-col>
                       </v-row>
                       <v-expand-transition>
-                        <div v-if="visibleCommentId === item.id" class="px-4 pb-4 pt-1 mt-6">
-                          <div v-if="reviews[item.id]?.length">
+                        <div v-if="visibleCommentId === room.id" class="px-4 pb-4 pt-1 mt-6">
+                          <div v-if="reviews[room.id]?.length">
                             <div
-                              v-for="(review, index) in reviews[item.id]"
+                              v-for="(review, index) in reviews[room.id]"
                               :key="index"
                               class="mb-2"
                             >
@@ -155,32 +152,35 @@
             </div>
 
             <div v-else-if="startDate && endDate" class="text-center pa-6 text-subtitle-1">
-              Šiuo metu nėra laisvos įrangos pagal pasirinktus kriterijus.
+              Šiuo metu nėra laisvų patalpų pagal pasirinktus kriterijus.
             </div>
 
             <div v-else class="text-center pa-6 text-subtitle-1">
               Pasirinkite nuo - iki laiką
             </div>
+
           </v-card>
         </v-card>
       </v-col>
     </v-row>
+
   </v-container>
 </template>
 
 <script setup lang="ts">
 import {ref, watch} from "vue";
 import {useToast} from "vue-toastification";
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
-import SvgIcon from "@jamescoyle/vue-icon";
-import {mdiCamera} from "@mdi/js";
-import EquipmentService from "@/services/EquipmentService.ts";
+import { useRouter } from 'vue-router';
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import RoomService from "@/services/RoomService";
 import ReviewService from "@/services/ReviewService";
 import {formatDateTime, formatForBackend} from "@/utils/dateFormatter";
 import {EntityType} from "@/types/EntityType";
 
-const equipment = ref([]);
+const router = useRouter();
+
+const rooms = ref([]);
 const reviews = ref<Record<string, { content: string; createdAt: string }[]>>({});
 const visibleCommentId = ref<string | null>(null);
 
@@ -189,18 +189,14 @@ const endDate = ref();
 
 const toast = useToast();
 
-const selectedEquipmentType = ref<string | null>(null);
+const selectedRoomType = ref<string | null>(null);
 const selectedAddress = ref<string | null>(null);
 
-const equipmentTypeOptions = [
-  {text: 'Klaviatura', value: 'KLAVIATURA'},
-  {text: 'Nešiojamas kompiuteris', value: 'NESIOJAMAS_KOMPIUTERIS'},
-  {text: 'Pelė', value: 'PELE'},
-  {text: 'Plančetinis kompiuteris', value: 'PLANCETINIS_KOMPIUTERIS'},
-  {text: 'Projektorius', value: 'PROJEKTORIUS'},
-  {text: 'Radio', value: 'RADIO'},
-  {text: 'Web kamera', value: 'WEB_KAMERA'},
-]
+const roomTypeOptions = [
+  {text: 'Darbo', value: 'DARBO'},
+  {text: 'Susitikimų', value: 'SUSITIKIMU'},
+  {text: 'Laisvalaikio', value: 'LAISVALAIKIO'},
+];
 
 const addressOptions = [
   {text: 'Akademijos g. 7', value: 'AKADEMIJOS_G_7'},
@@ -210,46 +206,44 @@ const addressOptions = [
   {text: 'Saulėtekio al. 15', value: 'SAULETEKIO_AL_15'}
 ];
 
-const showComments = (equipmentId: string) => {
-  visibleCommentId.value = visibleCommentId.value === equipmentId ? null : equipmentId;
+const showComments = (roomId: string) => {
+  visibleCommentId.value = visibleCommentId.value === roomId ? null : roomId;
 };
 
-watch([startDate, endDate, selectedEquipmentType, selectedAddress], async ([newStart, newEnd, newEquipmentType, newAddress]) => {
+watch([startDate, endDate, selectedRoomType, selectedAddress], async ([newStart, newEnd, newRoomType, newAddress]) => {
   if (newStart && newEnd) {
     try {
       const formattedStart = formatForBackend(startDate.value);
       const formattedEnd = formatForBackend(endDate.value);
 
-      //Fetch available equipment
-      equipment.value = await EquipmentService.getAvailableEquipment(formattedStart, formattedEnd, newEquipmentType, newAddress);
-      console.log("Fetched available equipment:", equipment.value);
+      rooms.value = await RoomService.getAvailableRooms(formattedStart, formattedEnd, newRoomType, newAddress);
+      console.log("Fetched available rooms:", rooms.value);
 
       //Fetch all reviews in parallel
-      const reviewPromises = equipment.value.map(equipment =>
-        ReviewService.getReviewsByEntity(equipment.id, EntityType.EQUIPMENT)
+      const reviewPromises = rooms.value.map(room =>
+        ReviewService.getReviewsByEntity(room.id, EntityType.ROOM)
           .catch(error => {
-            console.warn(`Failed to get reviews for equipment ${equipment.id}`, error);
-            return [] as Review[]; // Explicitly type the fallback
+            console.warn(`Failed to get reviews for room ${room.id}`, error);
+            return []; // Explicitly type the fallback
           })
       );
 
       const allReviews = await Promise.all(reviewPromises);
-
-      //Assign reviews to each equipment
-      equipment.value.forEach((equipment, index) => {
-        reviews.value[equipment.id] = allReviews[index];
+      //Assign reviews to each room
+      rooms.value.forEach((room, index) => {
+        reviews.value[room.id] = allReviews[index];
       });
 
     } catch (error) {
-      toast.error("Klaida gaunant įrangą");
-      console.error("Error fetching available equipment:", error);
+      toast.error("Klaida gaunant patalpas");
+      console.error("Error fetching available rooms:", error);
     }
   } else {
-    equipment.value = [];
+    rooms.value = [];
   }
 });
 
-const reserveEquipment = async (equipmentId: string) => {
+const reserveRoom = async (roomId: string) => {
   try {
     if (!startDate.value || !endDate.value) {
       toast.error('Prasome pasirinkti data ir laika');
@@ -259,13 +253,27 @@ const reserveEquipment = async (equipmentId: string) => {
     const formattedStart = formatForBackend(startDate.value);
     const formattedEnd = formatForBackend(endDate.value);
 
-    const response = await EquipmentService.reserveEquipment(equipmentId, formattedStart, formattedEnd);
+    const response = await RoomService.reserveRoom(roomId, formattedStart, formattedEnd);
 
-    toast.success('Iranga sekmingai rezervuota!');
+
+    toast.success('Patalpa sėkmingai rezervuota!', {
+      timeout: 3000
+    });
     console.log('Reservation created:', response);
 
-    // Refresh the equipment list
-    equipment.value = await EquipmentService.getAvailableEquipment(formattedStart, formattedEnd, selectedEquipmentType.value, selectedAddress.value);
+    setTimeout(() => {
+      toast.info('Nepamirškite rezervuoti papildomos įrangos! Spauskite čia.', {
+        timeout: 7000,
+        position: "top-center",
+        closeOnClick: true,
+        onClick: () => {
+          router.push('/EquipmentReservation');
+        }
+      });
+    }, 3200);
+
+    //Refresh the room list
+    rooms.value = await RoomService.getAvailableRooms(formattedStart, formattedEnd, selectedRoomType.value, selectedAddress.value);
 
   } catch (error) {
     toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));
@@ -293,7 +301,7 @@ const getAddressText = (addressValue: string): string => {
   }
 
   .right-clm {
-    min-height: 540px;
+    height: 540px;
   }
 
   .all-reservations {
@@ -307,7 +315,7 @@ const getAddressText = (addressValue: string): string => {
   }
 
   .right-clm {
-    min-height: 720px;
+    height: 720px;
   }
 
   .all-reservations {
@@ -321,7 +329,7 @@ const getAddressText = (addressValue: string): string => {
   }
 
   .right-clm {
-    min-height: 680px;
+    height: 680px;
   }
 
   .all-reservations {

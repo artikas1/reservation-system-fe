@@ -5,7 +5,7 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/components/Login.vue'),
+    component: () => import('@/components/auth/Login.vue'),
   },
   {
     path: '/home',
@@ -20,17 +20,22 @@ const routes = [
       {
         path: '/RoomReservation',
         name: 'RoomReservation',
-        component: () => import('@/components/RoomReservation.vue'),
+        component: () => import('@/components/room/RoomReservation.vue'),
       },
       {
         path: '/EquipmentReservation',
         name: 'EquipmentReservation',
-        component: () => import('@/components/EquipmentReservation.vue'),
+        component: () => import('@/components/equipment/EquipmentReservation.vue'),
       },
       {
         path: '/CarReservation',
         name: 'CarReservation',
-        component: () => import('@/components/CarReservation.vue'),
+        component: () => import('@/components/car/CarReservation.vue'),
+      },
+      {
+        path: '/CarCreation',
+        name: 'CarCreation',
+        component: () => import('@/components/car/CarCreation.vue'),
       },
       {
         path: '/ReservationHistory',
@@ -73,54 +78,3 @@ router.beforeEach((to, from, next) => {
 });
 
 export default router;
-
-// import { createRouter, createWebHistory } from 'vue-router'
-//
-// const routes = [
-//   {
-//     path: '/',
-//     component: () => import('@/layouts/default/Default.vue'),
-//     children: [
-//       {
-//         path: '/home',
-//         name: 'Home',
-//         // route level code-splitting
-//         // this generates a separate chunk (Home-[hash].js) for this route
-//         // which is lazy-loaded when the route is visited.
-//         component: () => import('@/views/Home.vue'),
-//       },
-//       {
-//         path: '/RoomReservation',
-//         name: 'RoomReservation',
-//         component: () => import('@/components/RoomReservation.vue'),
-//       },
-//       {
-//         path: '/EquipmentReservation',
-//         name: 'EquipmentReservation',
-//         component: () => import('@/components/EquipmentReservation.vue'),
-//       },
-//       {
-//         path: '/CarReservation',
-//         name: 'CarReservation',
-//         component: () => import('@/components/CarReservation.vue'),
-//       },
-//       {
-//         path: '/ReservationHistory',
-//         name: 'ReservationHistory',
-//         component: () => import('@/components/ReservationHistory.vue'),
-//       },
-//       {
-//         path: '/DetailedSearch',
-//         name: 'DetailedSearch',
-//         component: () => import('@/components/DetailedSearch.vue'),
-//       }
-//     ],
-//   },
-// ]
-//
-// const router = createRouter({
-//   history: createWebHistory(process.env.BASE_URL),
-//   routes,
-// })
-//
-// export default router

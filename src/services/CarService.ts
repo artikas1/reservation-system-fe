@@ -125,6 +125,22 @@ class CarService {
     }
   }
 
+  async createCar(carData: FormData): Promise<any> {
+    try {
+      const response = await axiosInstance.post('/car/create', carData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Car created successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating car:', error);
+      throw error;
+    }
+  }
+
+
 }
 
 export default new CarService();
