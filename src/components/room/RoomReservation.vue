@@ -75,8 +75,10 @@
       <v-col cols="12" md="8" class="d-flex flex-column">
         <v-card color="#F1F1F1" class="flex-grow right-clm">
           <v-card-text class="text-h5">
+            <v-icon ccolor="#27424B" size="32" class="mb-1" >mdi-office-building-outline</v-icon>
             Patalpos
           </v-card-text>
+
           <div class="d-flex justify-end">
             <v-select
               label="Filtrai"
@@ -97,8 +99,13 @@
                   <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
                     <v-card-text>
                       <v-row>
-                        <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
-                          <v-icon color="#27424B" size="36">mdi-chair-rolling</v-icon>
+                        <v-col cols="12" sm="2" lg="2" class="text-center d-flex align-center justify-center">
+                          <img
+                            v-if="room.image"
+                            :src="`data:image/jpeg;base64,${room.image}`"
+                            alt="Room image"
+                            style="width: 100%; max-width: 180px; border-radius: 8px; object-fit: cover; margin-top: 8px;"
+                          />
                         </v-col>
                         <v-col cols="12" sm="6" lg="7">
                           <v-card-text class="text-h6 pa-1">

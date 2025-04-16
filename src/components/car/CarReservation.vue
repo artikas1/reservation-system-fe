@@ -75,6 +75,7 @@
       <v-col cols="12" md="8" class="d-flex flex-column">
         <v-card color="#F1F1F1" class="flex-grow right-clm">
           <v-card-text class="text-h5">
+            <v-icon color="#27424B" size="32" class="mb-2" >mdi-car-back</v-icon>
             Automobiliai
           </v-card-text>
 
@@ -98,9 +99,15 @@
                   <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
                     <v-card-text>
                       <v-row>
-                        <v-col cols="12" sm="2" lg="1" class="text-center mt-3">
-                          <v-icon color="#27424B" size="36">mdi-car-back</v-icon>
+                        <v-col cols="12" sm="2" lg="2" class="text-center d-flex align-center justify-center">
+                          <img
+                            v-if="car.image"
+                            :src="`data:image/jpeg;base64,${car.image}`"
+                            alt="Car image"
+                            style="width: 100%; max-width: 180px; border-radius: 8px; object-fit: cover; margin-top: 8px;"
+                          />
                         </v-col>
+
                         <v-col cols="12" sm="6" lg="7">
                           <v-card-text class="text-h6 pa-1">
                             {{ car.manufacturer }} {{ car.model }}

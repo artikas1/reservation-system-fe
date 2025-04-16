@@ -4,7 +4,7 @@
     <v-form @submit.prevent="submitForm" ref="formRef">
 
       <div class="upload-box" @click="$refs.fileInput.click()">
-        <img v-if="previewUrl" :src="previewUrl" class="preview-img"/>
+        <img v-if="previewUrl" :src="previewUrl" class="preview-img" />
         <div v-else class="placeholder">
           <v-icon size="36">mdi-upload</v-icon>
           <div>Įkelti nuotrauką</div>
@@ -19,66 +19,50 @@
       </div>
 
       <v-text-field
-        v-model="form.manufacturer"
-        label="Gamintojas"
+        v-model="form.name"
+        label="Pavadinimas"
         variant="outlined"
-        hint="Pvz. BMW"
+        hint="Pvz. Darbo vieta"
         required
       />
 
       <v-text-field
-        v-model="form.model"
-        label="Modelis"
+        v-model="form.floor"
+        label="Aukštas"
         variant="outlined"
-        hint="Pvz. 530d xDrive"
+        hint="Pvz. 1"
         required
       />
 
       <v-text-field
-        v-model="form.vin"
-        label="VIN"
+        v-model="form.roomNumber"
+        label="Patalpos numeris"
         variant="outlined"
-        hint="Pvz. WBAJE5C56JB123456"
+        hint="Pvz. 101"
         required
       />
 
       <v-text-field
-        v-model="form.fuel"
-        label="Kuro tipas"
+        v-model="form.seats"
+        label="Sėdimos vietos"
         variant="outlined"
-        hint="Pvz. Benzinas, Dyzelis"
+        hint="Pvz. 2"
         required
       />
 
       <v-text-field
-        v-model="form.manufacturerDate"
-        label="Pagaminimo data"
+        v-model="form.description"
+        label="Aprašas"
         variant="outlined"
-        hint="Pvz. 2018-01-01"
-        required
-      />
-
-      <v-text-field
-        v-model="form.engineCapacity"
-        label="Variklio tūris (cc)"
-        variant="outlined"
-        hint="Pvz. 2993"
-        required
-      />
-
-      <v-text-field
-        v-model="form.numberPlate"
-        label="Valstybiniai numeriai"
-        variant="outlined"
-        hint="Pvz. AAA111"
+        hint="Pvz. Darbo kabinetas su..."
         required
       />
 
       <v-select
-        v-model="form.bodyType"
-        label="Kėbulo tipas"
+        v-model="form.roomType"
+        label="Patalpos tipas"
         variant="outlined"
-        :items="bodyTypeOptions"
+        :items="roomTypeOptions"
         required
       />
 
@@ -88,15 +72,6 @@
         variant="outlined"
         :items="addressOptions"
         required
-      />
-
-      <v-text-field
-        v-model="form.averageFuelConsumption"
-        label="Vidutinės kuro sanaudos (neprivaloma)"
-        variant="outlined"
-        hint="Pvz. 6.0, 6.5"
-        type="number"
-        hide-spin-buttons
       />
 
       <div class="d-flex justify-end mt-4">
@@ -110,22 +85,19 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import {useToast} from 'vue-toastification'
-import CarService from '@/services/CarService'
+import RoomService from "@/services/RoomService";
 
 const toast = useToast()
 const formRef = ref()
 
 const form = ref({
-  manufacturer: '',
-  model: '',
-  vin: '',
-  fuel: '',
-  manufacturerDate: '',
-  engineCapacity: '',
-  numberPlate: '',
-  bodyType: '',
+  name: '',
+  floor: '',
+  roomNumber: '',
+  seats: '',
+  description: '',
+  roomType: '',
   address: '',
-  averageFuelConsumption: null,
   image: '',
 })
 
@@ -139,7 +111,7 @@ const handleImageUpload = (event: Event) => {
   }
 }
 
-const bodyTypeOptions = ['SEDANAS', 'UNIVERSALAS', 'HECBEKAS', 'MINIVENAS']
+const roomTypeOptions = ['DARBO', 'SUSITIKIMU', 'LAISVALAIKIO']
 const addressOptions = ['AKADEMIJOS_G_7', 'GEDIMINO_PR_9', 'KONSTITUCIJOS_PR_12', 'NERIES_G_3', 'SAULETEKIO_AL_15']
 
 const submitForm = async () => {
@@ -153,14 +125,13 @@ const submitForm = async () => {
       if (val) formData.append(key, val as any)
     }
 
-    await CarService.createCar(formData); // send as form-data
-    toast.success('Automobilis sėkmingai sukurtas!');
+    await RoomService.createRoom(formData)
+    toast.success('Įranga sėkmingai sukurta!')
   } catch (error) {
-    toast.error('Nepavyko sukurti automobilio');
-    console.error('Create car error:', error);
+    toast.error('Nepavyko sukurti įrangos')
+    console.error('Create equipment error:', error)
   }
 }
-
 </script>
 
 <style scoped>
@@ -210,6 +181,4 @@ const submitForm = async () => {
     margin-right: 16px !important;
   }
 }
-
 </style>
-

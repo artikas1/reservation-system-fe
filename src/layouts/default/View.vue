@@ -59,6 +59,24 @@
           </v-list-item>
         </v-list>
       </v-card>
+
+      <div v-if="currentUser.isAdmin">
+        <div class="section">Administravimas</div>
+        <v-card class="mx-auto">
+          <v-list>
+            <v-list-item
+              :to="{ name: item.to }"
+              v-for="item in items4"
+              :key="item.value"
+              @click="selectItem(item)"
+            >
+              <v-icon :icon="item.icon" class="mr-2" />
+              {{ item.title }}
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </div>
+
     </v-navigation-drawer>
 
     <v-main>
@@ -67,14 +85,18 @@
   </v-app>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {onMounted, ref, provide } from 'vue';
 import UserService from "@/services/UserService.ts";
 
 // Main component logic
 const drawer = ref(null);
 const selectedItem = ref(null);
-const currentUser = ref({ firstName: '', lastName: '' });
+const currentUser = ref({
+  firstName: '',
+  lastName: '',
+  isAdmin: false // 🔁 turi būti camelCase
+});
 
 onMounted(async () => {
   try {
@@ -119,6 +141,16 @@ const items2 = ref([
     to: 'ReservationHistory',
   },
 ]);
+
+const items4 = ref([
+  {
+    title: 'Administratoriaus langas',
+    value: 99,
+    icon: 'mdi-shield-account',
+    to: 'AdminDashboard',
+  },
+]);
+
 
 const logout = () => {
   localStorage.removeItem('jwtToken');

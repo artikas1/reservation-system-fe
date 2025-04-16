@@ -7,7 +7,7 @@ class CarService {
   async getAllCarHistoryReservations(status?: string, startTime?: string, endTime?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${CAR_RESERVATION_API_URL}/user/history`, {
-        params: { reservationStatus: status, startTime, endTime }
+        params: {reservationStatus: status, startTime, endTime}
       });
       console.log('All car reservation history received:', response.data);
       return response.data;
@@ -20,7 +20,7 @@ class CarService {
   async getAvailableCars(startTime: string, endTime: string, bodyType?: string, address?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${CAR_API_BASE_URL}/available`, {
-        params: { startTime, endTime, bodyType: bodyType, address: address }
+        params: {startTime, endTime, bodyType: bodyType, address: address}
       });
       console.log('Available cars received:', response.data);
       return response.data;
@@ -33,7 +33,7 @@ class CarService {
   async getAvailableEcoCars(startTime: string, endTime: string, bodyType?: string, address?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${CAR_API_BASE_URL}/available/eco`, {
-        params: { startTime, endTime, bodyType: bodyType, address: address }
+        params: {startTime, endTime, bodyType: bodyType, address: address}
       });
       console.log('Available eco-friendly cars received:', response.data);
       return response.data;
@@ -43,7 +43,7 @@ class CarService {
     }
   }
 
-  async getCarReservations() : Promise<any>  {
+  async getCarReservations(): Promise<any> {
     try {
       const response = await axiosInstance.get(`${CAR_RESERVATION_API_URL}/user`);
       console.log('Car reservations received:', response.data);
@@ -57,7 +57,7 @@ class CarService {
   async deleteCarReservationByCarReservationId(carReservationId: string): Promise<void> {
     try {
       await axiosInstance.delete(`car-reservation/delete`, {
-        params: { carReservationId },
+        params: {carReservationId},
       });
       console.log('Car reservation deleted successfully');
     } catch (error) {
@@ -71,7 +71,7 @@ class CarService {
       const response = await axiosInstance.get(
         `${CAR_RESERVATION_API_URL}/car/${carId}/time-ranges`,
         {
-          params: excludeReservationId ? { excludeReservationId } : {}
+          params: excludeReservationId ? {excludeReservationId} : {}
         }
       );
       console.log('Reserved time ranges received:', response.data);
@@ -82,7 +82,7 @@ class CarService {
     }
   }
 
-  async reserveCar(carId: string, startTime: string, endTime: string): Promise<any>{
+  async reserveCar(carId: string, startTime: string, endTime: string): Promise<any> {
     try {
       const response = await axiosInstance.post(
         `${CAR_RESERVATION_API_URL}/${carId}`, // Note: carId in URL path

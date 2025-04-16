@@ -112,6 +112,20 @@ class EquipmentService {
     }
   }
 
+  async createEquipment(equipmentData: FormData): Promise<any> {
+    try {
+      const response = await axiosInstance.post('equipment/create', equipmentData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      console.log('Equipment created successfully', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating equipment:', error);
+      throw error;
+    }
+  }
 }
 
 export default new EquipmentService();

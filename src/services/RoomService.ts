@@ -20,7 +20,7 @@ class RoomService {
   async getAvailableRooms(startTime: string, endTime: string, roomType?: string, address?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${ROOM_API_BASE_URL}/available`, {
-        params: {startTime, endTime, roomType: roomType, address: address }
+        params: {startTime, endTime, roomType: roomType, address: address}
       });
       console.log('Available rooms received:', response.data);
       return response.data;
@@ -112,6 +112,20 @@ class RoomService {
     }
   }
 
+  async createRoom(roomData: FormData): Promise<any> {
+    try {
+      const response = await axiosInstance.post('room/create', roomData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      console.log('Room created successfully', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating room:', error);
+      throw error;
+    }
+  }
 }
 
 export default new RoomService();

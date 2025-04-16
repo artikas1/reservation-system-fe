@@ -7,13 +7,19 @@
         Mano aktyvios rezervacijos
       </p>
 
-      <v-card class="ma-10" v-for="room in rooms" :key="room.id">
+      <v-card class="mt-5 ml-10 mr-10" v-for="room in rooms" :key="room.id">
         <v-card-text>
           <v-row>
-            <v-col cols="12" sm="2" md="1" class="text-center mt-3">
-              <svg-icon type="mdi" :path="mdiChairRolling" style="color: #27424B; height: 40px; width: 38px"></svg-icon>
+            <v-col cols="12" sm="2" md="3" class="text-center mt-3">
+<!--              <svg-icon type="mdi" :path="mdiChairRolling" style="color: #27424B; height: 40px; width: 38px"></svg-icon>-->
+              <img
+                v-if="room.room.image"
+                :src="`data:image/jpeg;base64,${room.room.image}`"
+                alt="Room image"
+                style="width: 100%; max-width: 180px; border-radius: 6px;"
+              />
             </v-col>
-            <v-col cols="12" sm="6" lg="7">
+            <v-col cols="12" sm="6" md="6">
               <v-card-text class="text-h6 pa-1">
                 {{ room.room.name }}
               </v-card-text>
@@ -35,7 +41,7 @@
                 Rezervuota iki {{ formatDateTime(room.reservedTo) }}
               </v-card-text>
             </v-col>
-            <v-col cols="12" sm="4" class="text-right my-auto">
+            <v-col cols="12" sm="4" md="3" class="text-right my-auto">
               <v-btn icon="" class="me-2" @click="showCommentBox(room.id, room.room.id, EntityType.ROOM)">
                 <svg-icon type="mdi" :path="mdiCommentOutline"></svg-icon>
               </v-btn>
@@ -112,13 +118,19 @@
         </v-card-text>
       </v-card>
 
-      <v-card class="ma-10" v-for="equipment in equipment" :key="equipment.id">
+      <v-card class="mt-5 ml-10 mr-10" v-for="equipment in equipment" :key="equipment.id">
         <v-card-text>
           <v-row>
-            <v-col cols="12" sm="2" md="1" class="text-center mt-3">
-              <svg-icon type="mdi" :path="mdiCamera" style="color: #27424B; height: 40px; width: 38px"></svg-icon>
+            <v-col cols="12" sm="2" md="3" class="text-center mt-3">
+<!--              <svg-icon type="mdi" :path="mdiCamera" style="color: #27424B; height: 40px; width: 38px"></svg-icon>-->
+              <img
+                v-if="equipment.equipment.image"
+                :src="`data:image/jpeg;base64,${equipment.equipment.image}`"
+                alt="Equipment image"
+                style="width: 100%; max-width: 180px; border-radius: 6px;"
+              />
             </v-col>
-            <v-col cols="12" sm="6" lg="7">
+            <v-col cols="12" sm="6" md="6">
               <v-card-text class="text-h6 pa-1">
                 {{ equipment.equipment.name }}
               </v-card-text>
@@ -133,7 +145,7 @@
                 Rezervuota iki {{ formatDateTime(equipment.reservedTo) }}
               </v-card-text>
             </v-col>
-            <v-col cols="12" sm="4" class="text-right my-auto">
+            <v-col cols="12" sm="4" md="3" class="text-right my-auto">
               <v-btn icon="" class="me-2"
                      @click="showCommentBox(equipment.id, equipment.equipment.id, EntityType.EQUIPMENT)">
                 <svg-icon type="mdi" :path="mdiCommentOutline"></svg-icon>
@@ -212,13 +224,19 @@
         </v-card-text>
       </v-card>
 
-      <v-card class="ma-10" v-for="car in cars" :key="car.id">
+      <v-card class="mt-5 ml-10 mr-10" v-for="car in cars" :key="car.id">
         <v-card-text>
           <v-row>
-            <v-col cols="12" sm="2" md="1" class="text-center mt-3">
-              <svg-icon type="mdi" :path="mdiCar" style="color: #27424B; height: 40px; width: 38px"></svg-icon>
+            <v-col cols="12" sm="2" md="3" class="text-center mt-2">
+<!--              <svg-icon type="mdi" :path="mdiCar" style="color: #27424B; height: 40px; width: 38px" />-->
+              <img
+                v-if="car.car.image"
+                :src="`data:image/jpeg;base64,${car.car.image}`"
+                alt="Car image"
+                style="width: 100%; max-width: 180px; border-radius: 6px;"
+              />
             </v-col>
-            <v-col cols="12" sm="6" lg="7">
+            <v-col cols="12" sm="6" md="6">
               <v-card-text class="text-h6 pa-1">
                 {{ car.car.manufacturer }} {{ car.car.model }}
               </v-card-text>
@@ -235,7 +253,7 @@
                 Rezervuota iki {{ formatDateTime(car.reservedTo) }}
               </v-card-text>
             </v-col>
-            <v-col cols="12" sm="4" class="text-right my-auto">
+            <v-col cols="12" sm="4" md="3" class="text-right my-auto">
               <v-btn icon="" class="me-2" @click="showCommentBox(car.id, car.car.id, EntityType.CAR)">
                 <svg-icon type="mdi" :path="mdiCommentOutline"></svg-icon>
               </v-btn>
@@ -246,6 +264,7 @@
                 <svg-icon type="mdi" :path="mdiClose"></svg-icon>
               </v-btn>
             </v-col>
+
             <v-col v-if="editingReservationId === `car-${car.id}`" cols="12" style="position: relative; z-index: 1">
               <v-row class="d-flex">
 
@@ -312,6 +331,8 @@
         </v-card-text>
       </v-card>
 
+      <div class="mb-10"/>
+
     </v-card>
 
   </v-container>
@@ -322,7 +343,7 @@ import {onMounted, ref} from "vue";
 import {useToast} from "vue-toastification";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import SvgIcon from '@jamescoyle/vue-icon';
-import {mdiChairRolling, mdiCamera, mdiCar, mdiCommentOutline, mdiPencilOutline, mdiClose} from '@mdi/js';
+import {mdiCommentOutline, mdiPencilOutline, mdiClose} from '@mdi/js';
 import RoomService from "@/services/RoomService.ts";
 import EquipmentService from "@/services/EquipmentService.ts";
 import CarService from "@/services/CarService.ts";
