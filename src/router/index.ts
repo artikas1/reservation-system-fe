@@ -30,6 +30,12 @@ const routes = [
         meta: { requiresAuth: true, requiresAdmin: true }
       },
       {
+        path: '/RoomDeletion',
+        name: 'RoomDeletion',
+        component: () => import('@/components/room/RoomDeletion.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true }
+      },
+      {
         path: '/EquipmentReservation',
         name: 'EquipmentReservation',
         component: () => import('@/components/equipment/EquipmentReservation.vue'),
@@ -41,6 +47,12 @@ const routes = [
         meta: { requiresAuth: true, requiresAdmin: true }
       },
       {
+        path: '/EquipmentDeletion',
+        name: 'EquipmentDeletion',
+        component: () => import('@/components/equipment/EquipmentDeletion.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true }
+      },
+      {
         path: '/CarReservation',
         name: 'CarReservation',
         component: () => import('@/components/car/CarReservation.vue'),
@@ -49,6 +61,12 @@ const routes = [
         path: '/CarCreation',
         name: 'CarCreation',
         component: () => import('@/components/car/CarCreation.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true }
+      },
+      {
+        path: '/CarDeletion',
+        name: 'CarDeletion',
+        component: () => import('@/components/car/CarDeletion.vue'),
         meta: { requiresAuth: true, requiresAdmin: true }
       },
       {
@@ -82,21 +100,6 @@ const router = createRouter({
   routes,
 });
 
-// Navigation guard to protect routes
-// router.beforeEach((to, from, next) => {
-//   const token = localStorage.getItem('jwtToken');
-//
-//   if (to.meta.requiresAuth && !token) {
-//     // Redirect to login if the route requires authentication and no token is found
-//     next('/login');
-//   } else if (to.path === '/login' && token) {
-//     // Redirect to home if the user is already logged in and tries to access the login page
-//     next('/home');
-//   } else {
-//     // Allow access to the route
-//     next();
-//   }
-// });
 router.beforeEach(async (to, from, next) => {
   const token = localStorage.getItem("jwtToken");
 

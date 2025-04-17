@@ -112,6 +112,16 @@ class RoomService {
     }
   }
 
+  async getAllRooms(): Promise<any> {
+    try {
+      const response = await axiosInstance.get(`${ROOM_API_BASE_URL}/all`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching all rooms:', error);
+      throw error;
+    }
+  }
+
   async createRoom(roomData: FormData): Promise<any> {
     try {
       const response = await axiosInstance.post('room/create', roomData, {
@@ -123,6 +133,16 @@ class RoomService {
       return response.data;
     } catch (error) {
       console.error('Error creating room:', error);
+      throw error;
+    }
+  }
+
+  async deleteRoomById(roomId: string): Promise<void> {
+    try {
+      await axiosInstance.delete(`${ROOM_API_BASE_URL}/${roomId}`);
+      console.log('Room deleted successfully');
+    } catch (error) {
+      console.error('Error deleting room:', error);
       throw error;
     }
   }

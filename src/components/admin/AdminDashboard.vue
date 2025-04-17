@@ -42,7 +42,8 @@
 
               <v-tooltip text="Pašalinti" location="top">
                 <template v-slot:activator="{ props }">
-                  <v-btn icon="" size="small" class="me-2" v-bind="props">
+                  <v-btn icon="" size="small" class="me-2" v-bind="props"
+                         @click="$router.push({ name: 'RoomDeletion' })">
                     <v-icon color="#27424B" size="24">mdi-trash-can-outline</v-icon>
                   </v-btn>
                 </template>
@@ -85,7 +86,8 @@
 
               <v-tooltip text="Pašalinti" location="top">
                 <template v-slot:activator="{ props }">
-                  <v-btn icon="" size="small" class="me-2" v-bind="props">
+                  <v-btn icon="" size="small" class="me-2" v-bind="props"
+                         @click="$router.push({ name: 'EquipmentDeletion' })">
                     <v-icon color="#27424B" size="24">mdi-trash-can-outline</v-icon>
                   </v-btn>
                 </template>
@@ -128,7 +130,8 @@
 
               <v-tooltip text="Pašalinti" location="top">
                 <template v-slot:activator="{ props }">
-                  <v-btn icon="" size="small" class="me-2" v-bind="props">
+                  <v-btn icon="" size="small" class="me-2" v-bind="props"
+                         @click="$router.push({ name: 'CarDeletion' })">
                     <v-icon color="#27424B" size="24">mdi-trash-can-outline</v-icon>
                   </v-btn>
                 </template>

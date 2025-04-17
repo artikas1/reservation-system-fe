@@ -11,7 +11,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="2" md="3" class="text-center mt-3">
-<!--              <svg-icon type="mdi" :path="mdiChairRolling" style="color: #27424B; height: 40px; width: 38px"></svg-icon>-->
+              <!--              <svg-icon type="mdi" :path="mdiChairRolling" style="color: #27424B; height: 40px; width: 38px"></svg-icon>-->
               <img
                 v-if="room.room.image"
                 :src="`data:image/jpeg;base64,${room.room.image}`"
@@ -22,6 +22,7 @@
             <v-col cols="12" sm="6" md="6">
               <v-card-text class="text-h6 pa-1">
                 {{ room.room.name }}
+                <span v-if="room.room.deletedAt" class="text-red"> - patalpa pašalinta iš sistemos</span>
               </v-card-text>
               <v-card-text class="text-subtitle-2 pa-1">
                 Aukštas:
@@ -122,7 +123,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="2" md="3" class="text-center mt-3">
-<!--              <svg-icon type="mdi" :path="mdiCamera" style="color: #27424B; height: 40px; width: 38px"></svg-icon>-->
+              <!--              <svg-icon type="mdi" :path="mdiCamera" style="color: #27424B; height: 40px; width: 38px"></svg-icon>-->
               <img
                 v-if="equipment.equipment.image"
                 :src="`data:image/jpeg;base64,${equipment.equipment.image}`"
@@ -133,6 +134,7 @@
             <v-col cols="12" sm="6" md="6">
               <v-card-text class="text-h6 pa-1">
                 {{ equipment.equipment.name }}
+                <span v-if="equipment.equipment.deletedAt" class="text-red"> - įranga pašalinta iš sistemos</span>
               </v-card-text>
               <v-card-text class="text-subtitle-2 pa-1">
                 {{ equipment.equipment.manufacturer }}
@@ -157,7 +159,8 @@
                 <svg-icon type="mdi" :path="mdiClose"></svg-icon>
               </v-btn>
             </v-col>
-            <v-col v-if="editingReservationId === `equipment-${equipment.id}`" cols="12" style="position: relative; z-index: 1">
+            <v-col v-if="editingReservationId === `equipment-${equipment.id}`" cols="12"
+                   style="position: relative; z-index: 1">
               <v-row class="d-flex">
 
                 <v-col cols="12" md="6">
@@ -228,7 +231,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" sm="2" md="3" class="text-center mt-2">
-<!--              <svg-icon type="mdi" :path="mdiCar" style="color: #27424B; height: 40px; width: 38px" />-->
+              <!--              <svg-icon type="mdi" :path="mdiCar" style="color: #27424B; height: 40px; width: 38px" />-->
               <img
                 v-if="car.car.image"
                 :src="`data:image/jpeg;base64,${car.car.image}`"
@@ -239,20 +242,26 @@
             <v-col cols="12" sm="6" md="6">
               <v-card-text class="text-h6 pa-1">
                 {{ car.car.manufacturer }} {{ car.car.model }}
+                <span v-if="car.car.deletedAt" class="text-red"> - automobilis pašalintas iš sistemos</span>
               </v-card-text>
+
               <v-card-text class="text-subtitle-2 pa-1">
                 Valstybiniai numeriai: {{ car.car.numberPlate }}
               </v-card-text>
-              <v-card-text class="text-subtitle-2 pa-1">
+
+              <v-card-text class="text-subtitle-2 pa-1" v-if="!car.car.deletedAt">
                 {{ car.car.bodyType }}
               </v-card-text>
+
               <v-card-text class="text-subtitle-2 pa-1">
                 Rezervuota nuo {{ formatDateTime(car.reservedFrom) }}
               </v-card-text>
+
               <v-card-text class="text-subtitle-2 pa-1">
                 Rezervuota iki {{ formatDateTime(car.reservedTo) }}
               </v-card-text>
             </v-col>
+
             <v-col cols="12" sm="4" md="3" class="text-right my-auto">
               <v-btn icon="" class="me-2" @click="showCommentBox(car.id, car.car.id, EntityType.CAR)">
                 <svg-icon type="mdi" :path="mdiCommentOutline"></svg-icon>
@@ -269,16 +278,16 @@
               <v-row class="d-flex">
 
                 <v-col cols="12" md="6">
-                    <VueDatePicker
-                      v-model="startDate"
-                      label="Pradžios data"
-                      class="rounded mb-4"
-                      locale="lt"
-                      :enable-time-picker="true"
-                      :min-date="new Date()"
-                      :disabled-dates="isDateDisabled"
-                      teleport="body"
-                    ></VueDatePicker>
+                  <VueDatePicker
+                    v-model="startDate"
+                    label="Pradžios data"
+                    class="rounded mb-4"
+                    locale="lt"
+                    :enable-time-picker="true"
+                    :min-date="new Date()"
+                    :disabled-dates="isDateDisabled"
+                    teleport="body"
+                  ></VueDatePicker>
                 </v-col>
 
                 <v-col cols="12" md="6">
@@ -476,6 +485,21 @@ const updateReservation = async (reservationId: string, type: 'car' | 'equipment
   try {
     if (!startDate.value || !endDate.value) {
       toast.error('Prašome pasirinkti datas');
+      return;
+    }
+
+    // Extra guard: check if the entity is deleted before allowing update
+    let itemToCheck;
+    if (type === 'car') {
+      itemToCheck = cars.value.find(c => c.id === reservationId);
+    } else if (type === 'equipment') {
+      itemToCheck = equipment.value.find(e => e.id === reservationId);
+    } else if (type === 'room') {
+      itemToCheck = rooms.value.find(r => r.id === reservationId);
+    }
+
+    if (itemToCheck?.[type]?.deletedAt) {
+      toast.error(`${type === 'car' ? 'Automobilis' : type === 'equipment' ? 'Įranga' : 'Patalpa'} buvo pašalinta(-s) iš sistemos. Rezervacijos atnaujinti negalima.`);
       return;
     }
 

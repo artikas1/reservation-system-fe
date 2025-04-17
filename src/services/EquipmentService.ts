@@ -112,6 +112,17 @@ class EquipmentService {
     }
   }
 
+  async getAllEquipment(): Promise<any> {
+    try {
+      const response = await axiosInstance.get(`${EQUIPMENT_API_BASE_URL}/all`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching all equipment:', error);
+      throw error;
+    }
+  }
+
+
   async createEquipment(equipmentData: FormData): Promise<any> {
     try {
       const response = await axiosInstance.post('equipment/create', equipmentData, {
@@ -123,6 +134,16 @@ class EquipmentService {
       return response.data;
     } catch (error) {
       console.error('Error creating equipment:', error);
+      throw error;
+    }
+  }
+
+  async deleteEquipmentById(equipmentId: string): Promise<void> {
+    try {
+      await axiosInstance.delete(`${EQUIPMENT_API_BASE_URL}/${equipmentId}`);
+      console.log('Equipment deleted successfully');
+    } catch (error) {
+      console.error('Error deleting equipment:', error);
       throw error;
     }
   }

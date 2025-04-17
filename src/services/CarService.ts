@@ -125,6 +125,16 @@ class CarService {
     }
   }
 
+  async getAllCars(): Promise<any> {
+    try {
+      const response = await axiosInstance.get('/car/all');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching all cars:', error);
+      throw error;
+    }
+  }
+
   async createCar(carData: FormData): Promise<any> {
     try {
       const response = await axiosInstance.post('/car/create', carData, {
@@ -140,6 +150,15 @@ class CarService {
     }
   }
 
+  async deleteCarById(carId: string): Promise<void> {
+    try {
+      await axiosInstance.delete(`${CAR_API_BASE_URL}/${carId}`);
+      console.log('Car deleted successfully');
+    } catch (error) {
+      console.error('Error deleting car:', error);
+      throw error;
+    }
+  }
 
 }
 
