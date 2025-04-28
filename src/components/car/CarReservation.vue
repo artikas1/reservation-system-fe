@@ -99,7 +99,7 @@
                   <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
                     <v-card-text>
                       <v-row>
-                        <v-col cols="12" sm="2" lg="2" class="text-center d-flex align-center justify-center">
+                        <v-col cols="12" xs="12" sm="12" md="4" lg="4" class="text-center d-flex align-center justify-center">
                           <img
                             v-if="car.image"
                             :src="`data:image/jpeg;base64,${car.image}`"
@@ -108,7 +108,7 @@
                           />
                         </v-col>
 
-                        <v-col cols="12" sm="6" lg="7">
+                        <v-col cols="12" xs="12" sm="12" md="5" lg="5">
                           <v-card-text class="text-h6 pa-1">
                             {{ car.manufacturer }} {{ car.model }}
                           </v-card-text>
@@ -134,7 +134,7 @@
                             <strong>{{ getAddressText(car.address) }}</strong>
                           </v-card-text>
                         </v-col>
-                        <v-col cols="12" sm="4" class="text-right my-auto">
+                        <v-col cols="12" xs="12" sm="12" md="3" lg="3" class="text-right my-auto">
                           <v-btn class="reserve text-white" style="text-transform: none" @click="reserveCar(car.id)">
                             <p class="mx-2">Rezervuoti</p>
                           </v-btn>

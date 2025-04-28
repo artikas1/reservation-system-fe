@@ -128,12 +128,12 @@ const items = ref([
 ]);
 
 const items2 = ref([
-  {
-    title: 'Detali paieška',
-    value: 1,
-    icon: 'mdi-feature-search-outline',
-    to: 'DetailedSearch',
-  },
+  // {
+  //   title: 'Detali paieška',
+  //   value: 1,
+  //   icon: 'mdi-feature-search-outline',
+  //   to: 'DetailedSearch',
+  // },
   {
     title: 'Rezervacijų istorija',
     value: 2,
@@ -158,7 +158,7 @@ const logout = () => {
 };
 
 const items3 = ref([
-  { title: 'Logout', action: logout },
+  { title: 'Atsijungti', action: logout },
 ]);
 
 const selectItem = (item) => {

@@ -98,7 +98,7 @@
                   <v-card class="ma-2" style="border-color: #15495A; border-width: 1px;">
                     <v-card-text>
                       <v-row>
-                        <v-col cols="12" sm="2" lg="2" class="text-center d-flex align-center justify-center">
+                        <v-col cols="12" xs="12" sm="12" md="4" lg="4" class="text-center d-flex align-center justify-center">
                           <img
                             v-if="item.image"
                             :src="`data:image/jpeg;base64,${item.image}`"
@@ -106,7 +106,7 @@
                             style="width: 100%; max-width: 180px; border-radius: 8px; object-fit: cover; margin-top: 8px;"
                           />
                         </v-col>
-                        <v-col cols="12" sm="6" lg="7">
+                        <v-col cols="12" xs="12" sm="12" md="5" lg="5">
                           <v-card-text class="text-h6 pa-1">
                             {{ item.name }}
                           </v-card-text>
@@ -118,7 +118,7 @@
                           </v-card-text>
                         </v-col>
 
-                        <v-col cols="12" sm="4" class="text-right my-auto">
+                        <v-col cols="12" xs="12" sm="12" md="3" lg="3" class="text-right my-auto">
                           <v-btn class="reserve text-white" style="text-transform: none"
                                  @click="reserveEquipment(item.id)">
                             <p class="mx-2">Rezervuoti</p>
