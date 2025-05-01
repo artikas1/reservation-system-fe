@@ -3,7 +3,7 @@
     <v-card color="#F1F1F1" rounded="xl" class="mx-auto reservation mt-16">
 
       <p style="padding-top: 20px; padding-left: 20px;" class="text-h5">
-        Patalpų valdymas
+        Visos patalpos
       </p>
 
       <div v-for="room in rooms" :key="room.id">
@@ -30,23 +30,42 @@
                 </div>
                 <div class="text-subtitle-2">
                   {{ getRoomTypeText(room.roomType) }} kambarys<br/>
-                  {{ getAddressText(room.address) }}
-                </div>
-              </v-col>
+                  {{ getAddressText(room.address) }}<br/>
 
-              <!-- Delete button -->
-              <v-col cols="12" sm="3" lg="2" class="text-right my-auto">
-                <v-btn
-                  class="delete"
-                  @click="deleteRoom(room.id)"
-                >
-                  Ištrinti
-                </v-btn>
+                  <v-col cols="12" class="pl-0 d-flex align-center">
+                    <v-text-field
+                      :type="showIdMap[room.id] ? 'text' : 'password'"
+                      variant="outlined"
+                      :model-value="room.id"
+                      label="Automobilio ID"
+                      dense
+                      readonly
+                      hide-details
+                      class="flex-grow-1"
+                      :append-inner-icon="showIdMap[room.id] ? 'mdi-eye' : 'mdi-eye-off'"
+                      @click:append-inner="toggleIdVisibility(room.id)"
+                    />
+                    <v-tooltip text="Kopijuoti">
+                      <template v-slot:activator="{ props }">
+                        <v-icon
+                          v-bind="props"
+                          @click="copyToClipboard(room.id)"
+                          class="pl-6"
+                        >
+                          mdi-content-copy
+                        </v-icon>
+                      </template>
+                    </v-tooltip>
+                  </v-col>
+
+                </div>
               </v-col>
             </v-row>
           </v-card-text>
         </v-card>
       </div>
+
+      <br>
     </v-card>
   </v-container>
 </template>
@@ -93,18 +112,6 @@ const fetchRooms = async () => {
   }
 }
 
-const deleteRoom = async (roomId: string) => {
-  if (confirm('Ar tikrai norite pašalinti šią patalpą?')) {
-    try {
-      await RoomService.deleteRoomById(roomId)
-      toast.success('Patalpa pašalinta sėkmingai!')
-      await fetchRooms()
-    } catch (error) {
-      toast.error('Klaida šalinant patalpą')
-    }
-  }
-}
-
 onMounted(fetchRooms)
 
 const getRoomTypeText = (roomType: string): string => {
@@ -114,14 +121,23 @@ const getRoomTypeText = (roomType: string): string => {
 const getAddressText = (address: string): string => {
   return addressOptions.find(option => option.value === address)?.text || address
 }
+
+const showIdMap = ref<Record<string, boolean>>({})
+
+const toggleIdVisibility = (id: string) => {
+  showIdMap.value[id] = !showIdMap.value[id]
+}
+
+const copyToClipboard = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    toast.success('ID nukopijuotas!')
+  } catch (err) {
+    toast.error('Nepavyko nukopijuoti ID')
+  }
+}
 </script>
 
 <style scoped>
-
-.delete {
-  background: linear-gradient(-12deg, #8b1f1f 0%, #c0392b 100%);
-  border-radius: 10px;
-  color: white;
-}
 
 </style>

@@ -10,6 +10,18 @@ class StatisticService {
     const response = await axiosInstance.get('/statistics/resources-count');
     return response.data;
   }
+
+  async getResourceUsageHistory(resourceId, year) {
+    const response = await axiosInstance.get('/statistics/resource-usage-history', {
+      params: {
+        resourceId,
+        year,
+      },
+    });
+    return response.data;
+  }
+
+
 }
 
 export default new StatisticService();

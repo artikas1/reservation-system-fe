@@ -3,7 +3,7 @@
     <v-card color="#F1F1F1" rounded="xl" class="mx-auto reservation mt-16">
 
       <p style="padding-top: 20px; padding-left: 20px;" class="text-h5">
-        Automobilių valdymas
+        Visi Automobiliai
       </p>
 
       <div v-for="car in cars" :key="car.id">
@@ -27,19 +27,38 @@
                 </div>
                 <div class="text-subtitle-2">
                   {{ getBodyTypeText(car.bodyType) }}<br/>
-                  {{ getAddressText(car.address) }}
+                  {{ getAddressText(car.address) }}<br/>
+
+                  <v-col cols="12" class="pl-0 d-flex align-center">
+                    <v-text-field
+                      :type="showIdMap[car.id] ? 'text' : 'password'"
+                      variant="outlined"
+                      :model-value="car.id"
+                      label="Automobilio ID"
+                      dense
+                      readonly
+                      hide-details
+                      class="flex-grow-1"
+                      :append-inner-icon="showIdMap[car.id] ? 'mdi-eye' : 'mdi-eye-off'"
+                      @click:append-inner="toggleIdVisibility(car.id)"
+                    />
+                    <v-tooltip text="Kopijuoti">
+                      <template v-slot:activator="{ props }">
+                        <v-icon
+                          v-bind="props"
+                          @click="copyToClipboard(car.id)"
+                          class="pl-6"
+                        >
+                          mdi-content-copy
+                        </v-icon>
+                      </template>
+                    </v-tooltip>
+                  </v-col>
+
                 </div>
               </v-col>
 
-              <!-- Delete button -->
-              <v-col cols="12" sm="3" lg="2" class="text-right my-auto">
-                <v-btn
-                  class="delete"
-                  @click="deleteCar(car.id)"
-                >
-                  Ištrinti
-                </v-btn>
-              </v-col>
+
             </v-row>
           </v-card-text>
         </v-card>
@@ -51,9 +70,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import {onMounted, ref} from 'vue'
 import CarService from '@/services/CarService'
-import { useToast } from 'vue-toastification'
+import {useToast} from 'vue-toastification'
 
 interface CarType {
   id: string
@@ -69,18 +88,18 @@ const cars = ref<CarType[]>([])
 const toast = useToast()
 
 const bodyTypeOptions = [
-  { text: 'Hečbekas', value: 'HECBEKAS' },
-  { text: 'Sedanas', value: 'SEDANAS' },
-  { text: 'Universalas', value: 'UNIVERSALAS' },
-  { text: 'Minivenas', value: 'MINIVENAS' },
+  {text: 'Hečbekas', value: 'HECBEKAS'},
+  {text: 'Sedanas', value: 'SEDANAS'},
+  {text: 'Universalas', value: 'UNIVERSALAS'},
+  {text: 'Minivenas', value: 'MINIVENAS'},
 ]
 
 const addressOptions = [
-  { text: 'Akademijos g. 7', value: 'AKADEMIJOS_G_7' },
-  { text: 'Gedimino pr. 9', value: 'GEDIMINO_PR_9' },
-  { text: 'Konstitucijos pr. 12', value: 'KONSTITUCIJOS_PR_12' },
-  { text: 'Neries g. 3', value: 'NERIES_G_3' },
-  { text: 'Saulėtekio al. 15', value: 'SAULETEKIO_AL_15' },
+  {text: 'Akademijos g. 7', value: 'AKADEMIJOS_G_7'},
+  {text: 'Gedimino pr. 9', value: 'GEDIMINO_PR_9'},
+  {text: 'Konstitucijos pr. 12', value: 'KONSTITUCIJOS_PR_12'},
+  {text: 'Neries g. 3', value: 'NERIES_G_3'},
+  {text: 'Saulėtekio al. 15', value: 'SAULETEKIO_AL_15'},
 ]
 
 const fetchCars = async () => {
@@ -89,18 +108,6 @@ const fetchCars = async () => {
     cars.value = allCars.filter((car: CarType) => !car.deletedAt)
   } catch (error) {
     toast.error('Nepavyko gauti automobilių sąrašo')
-  }
-}
-
-const deleteCar = async (carId: string) => {
-  if (confirm('Ar tikrai norite pašalinti šį automobilį?')) {
-    try {
-      await CarService.deleteCarById(carId)
-      toast.success('Automobilis pašalintas sėkmingai!')
-      await fetchCars()
-    } catch (error) {
-      toast.error('Klaida šalinant automobilį')
-    }
   }
 }
 
@@ -113,14 +120,23 @@ const getBodyTypeText = (bodyType: string): string => {
 const getAddressText = (address: string): string => {
   return addressOptions.find(option => option.value === address)?.text || address
 }
+
+const showIdMap = ref<Record<string, boolean>>({})
+
+const toggleIdVisibility = (id: string) => {
+  showIdMap.value[id] = !showIdMap.value[id]
+}
+
+const copyToClipboard = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    toast.success('ID nukopijuotas!')
+  } catch (err) {
+    toast.error('Nepavyko nukopijuoti ID')
+  }
+}
 </script>
 
 <style scoped>
-
-.delete {
-  background: linear-gradient(-12deg, #8b1f1f 0%, #c0392b 100%);
-  border-radius: 10px;
-  color: white;
-}
 
 </style>

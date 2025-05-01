@@ -4,6 +4,17 @@ const EQUIPMENT_API_BASE_URL = '/equipment';
 const EQUIPMENT_RESERVATION_API_URL = '/equipment-reservation';
 
 class EquipmentService {
+  async getEquipmentById(equipmentId: string): Promise<any> {
+    try {
+      const response = await axiosInstance.get(`${EQUIPMENT_API_BASE_URL}/${equipmentId}`);
+      console.log('Equipment details received:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching equipment by ID:', error);
+      throw error;
+    }
+  }
+
   async getAllEquipmentHistoryReservations(status?: string, startTime?: string, endTime?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${EQUIPMENT_RESERVATION_API_URL}/user/history`, {

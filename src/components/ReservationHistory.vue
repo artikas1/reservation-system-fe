@@ -1,5 +1,5 @@
 <template>
-  <v-container class="container ma-16 mx-auto" style=" max-width: 71vw">
+  <v-container class="container ma-16 mx-auto max" style=" max-width: 71vw">
     <v-card color="#F1F1F1" class="mb-5" style="overflow: unset; z-index: 1">
       <v-card-text class="text-h6">
         Rezervacijų istorija
@@ -30,7 +30,7 @@
           clearable
         ></v-select>
 
-        <div style="flex-basis: 100%; height: 0;"></div>
+<!--        <div style="flex-basis: 100%; height: 0;"></div>-->
 
         <VueDatePicker
           label="Pradžios data"
@@ -58,9 +58,8 @@
     <v-row>
       <v-col cols="12" class="d-flex flex-column">
         <v-card color="#F1F1F1" class="flex-grow right-clm" style="z-index: 0">
-          <v-card class="bg-white mx-6 all-reservations mt-6" style="overflow: auto; margin-bottom: 40px;">
 
-            <v-card class="ma-10" v-for="room in rooms" :key="room.id">
+            <v-card class="ml-10 mr-10 mt-5 mb-5" v-for="room in rooms" :key="room.id">
               <v-card-text>
                 <v-row>
                   <v-col cols="12" sm="2" md="1" class="text-center mt-3">
@@ -130,7 +129,7 @@
               </v-card-text>
             </v-card>
 
-            <v-card class="ma-10" v-for="equipment in equipment" :key="equipment.id">
+            <v-card class="ml-10 mr-10 mt-5 mb-5" v-for="equipment in equipment" :key="equipment.id">
               <v-card-text>
                 <v-row>
                   <v-col cols="12" sm="2" md="1" class="text-center mt-3">
@@ -194,7 +193,7 @@
               </v-card-text>
             </v-card>
 
-            <v-card class="ma-10" v-for="car in cars" :key="car.id">
+            <v-card class="ml-10 mr-10 mt-5 mb-5" v-for="car in cars" :key="car.id">
               <v-card-text>
                 <v-row>
                   <v-col cols="12" sm="2" md="1" class="text-center mt-3">
@@ -258,8 +257,8 @@
               </v-card-text>
             </v-card>
 
+          <br>
           </v-card>
-        </v-card>
       </v-col>
     </v-row>
 

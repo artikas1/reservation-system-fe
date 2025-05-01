@@ -419,29 +419,35 @@ onMounted(async () => {
 });
 
 const deleteRoomReservation = async (id) => {
-  try {
-    await RoomService.deleteReservationByRoomReservationId(id);
-    rooms.value = rooms.value.filter(room => room.id !== id);
-  } catch (error) {
-    console.error('Error deleting reservation:', error);
+  if (confirm('Ar tikrai norite atšaukti šią rezervaciją?')) {
+    try {
+      await RoomService.deleteReservationByRoomReservationId(id);
+      rooms.value = rooms.value.filter(room => room.id !== id);
+    } catch (error) {
+      console.error('Error deleting reservation:', error);
+    }
   }
 };
 
 const deleteEquipmentReservation = async (id) => {
-  try {
-    await EquipmentService.deleteReservationByEquipmentReservationId(id);
-    equipment.value = equipment.value.filter(equipment => equipment.id !== id);
-  } catch (error) {
-    console.error('Error deleting equipment reservation:', error);
+  if (confirm('Ar tikrai norite atšaukti šią rezervaciją?')) {
+    try {
+      await EquipmentService.deleteReservationByEquipmentReservationId(id);
+      equipment.value = equipment.value.filter(equipment => equipment.id !== id);
+    } catch (error) {
+      console.error('Error deleting equipment reservation:', error);
+    }
   }
 };
 
 const deleteCarReservation = async (id) => {
-  try {
-    await CarService.deleteCarReservationByCarReservationId(id);
-    cars.value = cars.value.filter(car => car.id !== id);
-  } catch (error) {
-    console.error('Error deleting car reservation:', error);
+  if (confirm('Ar tikrai norite atšaukti šią rezervaciją?')) {
+    try {
+      await CarService.deleteCarReservationByCarReservationId(id);
+      cars.value = cars.value.filter(car => car.id !== id);
+    } catch (error) {
+      console.error('Error deleting car reservation:', error);
+    }
   }
 }
 

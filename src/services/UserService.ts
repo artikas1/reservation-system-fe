@@ -10,9 +10,9 @@ class UserService {
       const user = response.data;
 
       return {
-        firstName: user.firstName,     // iš backend'o ateina `firstName`
-        lastName: user.lastName,       // iš backend'o ateina `lastName`
-        isAdmin: user.admin            // 🔁 ČIA YRA SVARBIAUSIA
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isAdmin: user.admin
       };
     } catch (error) {
       console.log('Error fetching current user:', error);

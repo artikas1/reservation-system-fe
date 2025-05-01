@@ -24,6 +24,12 @@ const routes = [
         component: () => import('@/components/room/RoomReservation.vue'),
       },
       {
+        path: '/RoomList',
+        name: 'RoomList',
+        component: () => import('@/components/room/RoomList.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true }
+      },
+      {
         path: '/RoomCreation',
         name: 'RoomCreation',
         component: () => import('@/components/room/RoomCreation.vue'),
@@ -41,6 +47,12 @@ const routes = [
         component: () => import('@/components/equipment/EquipmentReservation.vue'),
       },
       {
+        path: '/EquipmentList',
+        name: 'EquipmentList',
+        component: () => import('@/components/equipment/EquipmentList.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true }
+      },
+      {
         path: '/EquipmentCreation',
         name: 'EquipmentCreation',
         component: () => import('@/components/equipment/EquipmentCreation.vue'),
@@ -56,6 +68,12 @@ const routes = [
         path: '/CarReservation',
         name: 'CarReservation',
         component: () => import('@/components/car/CarReservation.vue'),
+      },
+      {
+        path: '/CarList',
+        name: 'CarList',
+        component: () => import('@/components/car/CarList.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true }
       },
       {
         path: '/CarCreation',
