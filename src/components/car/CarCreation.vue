@@ -1,109 +1,110 @@
 <template>
-  <v-container class="simple-form pa-6 mt-16">
+  <v-container class="pa-6">
+    <v-card class="mx-auto reservation mt-16 pa-6" color="#F1F1F1" rounded="xl" max-width="600">
+      <v-form @submit.prevent="submitForm" ref="formRef">
 
-    <v-form @submit.prevent="submitForm" ref="formRef">
-
-      <div class="upload-box" @click="$refs.fileInput.click()">
-        <img v-if="previewUrl" :src="previewUrl" class="preview-img"/>
-        <div v-else class="placeholder">
-          <v-icon size="36">mdi-upload</v-icon>
-          <div>Įkelti nuotrauką</div>
+        <div class="upload-box" @click="$refs.fileInput.click()">
+          <img v-if="previewUrl" :src="previewUrl" class="preview-img"/>
+          <div v-else class="placeholder">
+            <v-icon size="36">mdi-upload</v-icon>
+            <div>Įkelti nuotrauką</div>
+          </div>
+          <input
+            ref="fileInput"
+            type="file"
+            accept="image/*"
+            class="d-none"
+            @change="handleImageUpload"
+          />
         </div>
-        <input
-          ref="fileInput"
-          type="file"
-          accept="image/*"
-          class="d-none"
-          @change="handleImageUpload"
+
+        <v-text-field
+          v-model="form.manufacturer"
+          label="Gamintojas"
+          variant="outlined"
+          hint="Pvz. BMW"
+          required
         />
-      </div>
 
-      <v-text-field
-        v-model="form.manufacturer"
-        label="Gamintojas"
-        variant="outlined"
-        hint="Pvz. BMW"
-        required
-      />
+        <v-text-field
+          v-model="form.model"
+          label="Modelis"
+          variant="outlined"
+          hint="Pvz. 530d xDrive"
+          required
+        />
 
-      <v-text-field
-        v-model="form.model"
-        label="Modelis"
-        variant="outlined"
-        hint="Pvz. 530d xDrive"
-        required
-      />
+        <v-text-field
+          v-model="form.vin"
+          label="VIN"
+          variant="outlined"
+          hint="Pvz. WBAJE5C56JB123456"
+          required
+        />
 
-      <v-text-field
-        v-model="form.vin"
-        label="VIN"
-        variant="outlined"
-        hint="Pvz. WBAJE5C56JB123456"
-        required
-      />
+        <v-text-field
+          v-model="form.fuel"
+          label="Kuro tipas"
+          variant="outlined"
+          hint="Pvz. Benzinas, Dyzelis"
+          required
+        />
 
-      <v-text-field
-        v-model="form.fuel"
-        label="Kuro tipas"
-        variant="outlined"
-        hint="Pvz. Benzinas, Dyzelis"
-        required
-      />
+        <v-text-field
+          v-model="form.manufacturerDate"
+          label="Pagaminimo data"
+          variant="outlined"
+          hint="Pvz. 2018-01-01"
+          required
+        />
 
-      <v-text-field
-        v-model="form.manufacturerDate"
-        label="Pagaminimo data"
-        variant="outlined"
-        hint="Pvz. 2018-01-01"
-        required
-      />
+        <v-text-field
+          v-model="form.engineCapacity"
+          label="Variklio tūris (cc)"
+          variant="outlined"
+          hint="Pvz. 2993"
+          required
+        />
 
-      <v-text-field
-        v-model="form.engineCapacity"
-        label="Variklio tūris (cc)"
-        variant="outlined"
-        hint="Pvz. 2993"
-        required
-      />
+        <v-text-field
+          v-model="form.numberPlate"
+          label="Valstybiniai numeriai"
+          variant="outlined"
+          hint="Pvz. AAA111"
+          required
+        />
 
-      <v-text-field
-        v-model="form.numberPlate"
-        label="Valstybiniai numeriai"
-        variant="outlined"
-        hint="Pvz. AAA111"
-        required
-      />
+        <v-select
+          v-model="form.bodyType"
+          label="Kėbulo tipas"
+          variant="outlined"
+          :items="bodyTypeOptions"
+          required
+        />
 
-      <v-select
-        v-model="form.bodyType"
-        label="Kėbulo tipas"
-        variant="outlined"
-        :items="bodyTypeOptions"
-        required
-      />
+        <v-select
+          v-model="form.address"
+          label="Adresas"
+          variant="outlined"
+          :items="addressOptions"
+          required
+        />
 
-      <v-select
-        v-model="form.address"
-        label="Adresas"
-        variant="outlined"
-        :items="addressOptions"
-        required
-      />
+        <v-text-field
+          v-model="form.averageFuelConsumption"
+          label="Vidutinės kuro sanaudos (neprivaloma)"
+          variant="outlined"
+          hint="Pvz. 6.0, 6.5"
+          type="number"
+          hide-spin-buttons
+        />
 
-      <v-text-field
-        v-model="form.averageFuelConsumption"
-        label="Vidutinės kuro sanaudos (neprivaloma)"
-        variant="outlined"
-        hint="Pvz. 6.0, 6.5"
-        type="number"
-        hide-spin-buttons
-      />
+        <div class="d-flex justify-end mt-4">
+          <v-btn type="submit" color="success" class="create">Išsaugoti</v-btn>
+        </div>
 
-      <div class="d-flex justify-end mt-4">
-        <v-btn type="submit" color="success" class="create">Išsaugoti</v-btn>
-      </div>
-
-    </v-form>
+      </v-form>
+    </v-card>
   </v-container>
 </template>
 
@@ -164,11 +165,6 @@ const submitForm = async () => {
 </script>
 
 <style scoped>
-.simple-form {
-  max-width: 600px;
-  background-color: #f8f8f8;
-  border-radius: 12px;
-}
 
 .upload-box {
   border: 2px dashed #ccc;
@@ -179,8 +175,7 @@ const submitForm = async () => {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  margin-top: 16px;
-  margin-bottom: 20px;
+  margin: 16px 0 20px;
   overflow: hidden;
 }
 
@@ -202,13 +197,6 @@ const submitForm = async () => {
 .create {
   background: linear-gradient(-12deg, #324951 0%, #116f4b 100%);
   border-radius: 10px;
-}
-
-@media only screen and (max-width: 600px) {
-  .v-container {
-    margin-left: 16px !important;
-    margin-right: 16px !important;
-  }
 }
 
 </style>

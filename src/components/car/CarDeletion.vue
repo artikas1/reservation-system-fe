@@ -1,6 +1,6 @@
 <template>
-  <v-container class="container">
-    <v-card color="#F1F1F1" rounded="xl" class="mx-auto reservation mt-16">
+  <v-container class="pa-6 mt-16">
+    <v-card color="#F1F1F1" rounded="xl" class="mx-auto reservation">
 
       <p style="padding-top: 20px; padding-left: 20px;" class="text-h5">
         Automobilių valdymas

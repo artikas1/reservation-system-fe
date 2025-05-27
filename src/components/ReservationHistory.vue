@@ -380,7 +380,7 @@ watch([selectedStatus, selectedType, startDate, endDate], async ([newStatus, new
 <style scoped>
 @media only screen and (max-width: 600px) {
   .right-clm {
-    min-height: 540px;
+    min-height: auto;
   }
 
   .all-reservations {
@@ -390,7 +390,7 @@ watch([selectedStatus, selectedType, startDate, endDate], async ([newStatus, new
 
 @media (min-width: 600px) and (max-width: 1279px) {
   .right-clm {
-    min-height: 720px;
+    min-height: auto;
   }
 
   .all-reservations {
@@ -400,7 +400,7 @@ watch([selectedStatus, selectedType, startDate, endDate], async ([newStatus, new
 
 @media (min-width: 1280px) {
   .right-clm {
-    height: 680px;
+    height: auto;
   }
 
   .all-reservations {

@@ -1,84 +1,85 @@
 <template>
-  <v-container class="simple-form pa-6 mt-16">
+  <v-container class="pa-6">
+    <v-card class="mx-auto reservation mt-16 pa-6" color="#F1F1F1" rounded="xl" max-width="600">
+      <v-form @submit.prevent="submitForm" ref="formRef">
 
-    <v-form @submit.prevent="submitForm" ref="formRef">
-
-      <div class="upload-box" @click="$refs.fileInput.click()">
-        <img v-if="previewUrl" :src="previewUrl" class="preview-img" />
-        <div v-else class="placeholder">
-          <v-icon size="36">mdi-upload</v-icon>
-          <div>Įkelti nuotrauką</div>
+        <div class="upload-box" @click="$refs.fileInput.click()">
+          <img v-if="previewUrl" :src="previewUrl" class="preview-img"/>
+          <div v-else class="placeholder">
+            <v-icon size="36">mdi-upload</v-icon>
+            <div>Įkelti nuotrauką</div>
+          </div>
+          <input
+            ref="fileInput"
+            type="file"
+            accept="image/*"
+            class="d-none"
+            @change="handleImageUpload"
+          />
         </div>
-        <input
-          ref="fileInput"
-          type="file"
-          accept="image/*"
-          class="d-none"
-          @change="handleImageUpload"
+
+        <v-text-field
+          v-model="form.name"
+          label="Pavadinimas"
+          variant="outlined"
+          hint="Pvz. Darbo vieta"
+          required
         />
-      </div>
 
-      <v-text-field
-        v-model="form.name"
-        label="Pavadinimas"
-        variant="outlined"
-        hint="Pvz. Darbo vieta"
-        required
-      />
+        <v-text-field
+          v-model="form.floor"
+          label="Aukštas"
+          variant="outlined"
+          hint="Pvz. 1"
+          required
+        />
 
-      <v-text-field
-        v-model="form.floor"
-        label="Aukštas"
-        variant="outlined"
-        hint="Pvz. 1"
-        required
-      />
+        <v-text-field
+          v-model="form.roomNumber"
+          label="Patalpos numeris"
+          variant="outlined"
+          hint="Pvz. 101"
+          required
+        />
 
-      <v-text-field
-        v-model="form.roomNumber"
-        label="Patalpos numeris"
-        variant="outlined"
-        hint="Pvz. 101"
-        required
-      />
+        <v-text-field
+          v-model="form.seats"
+          label="Sėdimos vietos"
+          variant="outlined"
+          hint="Pvz. 2"
+          required
+        />
 
-      <v-text-field
-        v-model="form.seats"
-        label="Sėdimos vietos"
-        variant="outlined"
-        hint="Pvz. 2"
-        required
-      />
+        <v-text-field
+          v-model="form.description"
+          label="Aprašas"
+          variant="outlined"
+          hint="Pvz. Darbo kabinetas su..."
+          required
+        />
 
-      <v-text-field
-        v-model="form.description"
-        label="Aprašas"
-        variant="outlined"
-        hint="Pvz. Darbo kabinetas su..."
-        required
-      />
+        <v-select
+          v-model="form.roomType"
+          label="Patalpos tipas"
+          variant="outlined"
+          :items="roomTypeOptions"
+          required
+        />
 
-      <v-select
-        v-model="form.roomType"
-        label="Patalpos tipas"
-        variant="outlined"
-        :items="roomTypeOptions"
-        required
-      />
+        <v-select
+          v-model="form.address"
+          label="Adresas"
+          variant="outlined"
+          :items="addressOptions"
+          required
+        />
 
-      <v-select
-        v-model="form.address"
-        label="Adresas"
-        variant="outlined"
-        :items="addressOptions"
-        required
-      />
+        <div class="d-flex justify-end mt-4">
+          <v-btn type="submit" color="success" class="create">Išsaugoti</v-btn>
+        </div>
 
-      <div class="d-flex justify-end mt-4">
-        <v-btn type="submit" color="success" class="create">Išsaugoti</v-btn>
-      </div>
-
-    </v-form>
+      </v-form>
+    </v-card>
   </v-container>
 </template>
 
@@ -135,11 +136,6 @@ const submitForm = async () => {
 </script>
 
 <style scoped>
-.simple-form {
-  max-width: 600px;
-  background-color: #f8f8f8;
-  border-radius: 12px;
-}
 
 .upload-box {
   border: 2px dashed #ccc;
@@ -150,8 +146,7 @@ const submitForm = async () => {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  margin-top: 16px;
-  margin-bottom: 20px;
+  margin: 16px 0 20px;
   overflow: hidden;
 }
 
@@ -175,10 +170,4 @@ const submitForm = async () => {
   border-radius: 10px;
 }
 
-@media only screen and (max-width: 600px) {
-  .v-container {
-    margin-left: 16px !important;
-    margin-right: 16px !important;
-  }
-}
 </style>

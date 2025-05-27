@@ -334,7 +334,7 @@ const fetchResourceName = async () => {
   }
 }
 
-const resourceIdInput = ref('fe691876-0eaa-4403-84a2-300e8a6fc13a')
+const resourceIdInput = ref('ebf5594f-c918-4e7a-a775-68fedfa42536')
 const yearInput = ref(new Date().getFullYear())
 const resourceName = ref('')
 const resourceInfo = reactive({
