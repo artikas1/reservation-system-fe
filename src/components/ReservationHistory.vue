@@ -30,7 +30,7 @@
           clearable
         ></v-select>
 
-<!--        <div style="flex-basis: 100%; height: 0;"></div>-->
+        <!--        <div style="flex-basis: 100%; height: 0;"></div>-->
 
         <VueDatePicker
           label="Pradžios data"
@@ -58,7 +58,7 @@
     <v-row>
       <v-col cols="12" class="d-flex flex-column">
         <v-card color="#F1F1F1" class="flex-grow right-clm" style="z-index: 0">
-
+          <div v-if="rooms.length > 0 || equipment.length > 0 || cars.length > 0">
             <v-card class="ml-10 mr-10 mt-5 mb-5" v-for="room in rooms" :key="room.id">
               <v-card-text>
                 <v-row>
@@ -257,8 +257,14 @@
               </v-card-text>
             </v-card>
 
-          <br>
-          </v-card>
+            <br>
+          </div>
+
+          <div v-else class="text-center pa-6 text-subtitle-1">
+            Rezervacijų istorija tuščia
+          </div>
+
+        </v-card>
       </v-col>
     </v-row>
 
