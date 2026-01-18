@@ -14,6 +14,7 @@ class CarService {
       throw error;
     }
   }
+
   async getAllCarHistoryReservations(status?: string, startTime?: string, endTime?: string): Promise<any> {
     try {
       const response = await axiosInstance.get(`${CAR_RESERVATION_API_URL}/user/history`, {
@@ -27,23 +28,17 @@ class CarService {
     }
   }
 
-  async getAvailableCars(startTime: string, endTime: string, bodyType?: string, address?: string): Promise<any> {
-    try {
-      const response = await axiosInstance.get(`${CAR_API_BASE_URL}/available`, {
-        params: {startTime, endTime, bodyType: bodyType, address: address}
-      });
-      console.log('Available cars received:', response.data);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching available cars:', error);
-      throw error;
-    }
-  }
-
-  async getAvailableEcoCars(startTime: string, endTime: string, bodyType?: string, address?: string): Promise<any> {
+  async getAvailableEcoCars(
+    startTime: string,
+    endTime: string,
+    page: number,
+    pageSize: number,
+    bodyType?: string,
+    address?: string
+  ): Promise<any> {
     try {
       const response = await axiosInstance.get(`${CAR_API_BASE_URL}/available/eco`, {
-        params: {startTime, endTime, bodyType: bodyType, address: address}
+        params: {startTime, endTime, page, pageSize, bodyType: bodyType, address: address}
       });
       console.log('Available eco-friendly cars received:', response.data);
       return response.data;

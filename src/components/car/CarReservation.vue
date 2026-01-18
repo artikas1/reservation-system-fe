@@ -75,7 +75,7 @@
       <v-col cols="12" md="8" class="d-flex flex-column">
         <v-card color="#F1F1F1" class="flex-grow right-clm">
           <v-card-text class="text-h5">
-            <v-icon color="#27424B" size="32" class="mb-2" >mdi-car-back</v-icon>
+            <v-icon color="#27424B" size="32" class="mb-2">mdi-car-back</v-icon>
             Automobiliai
           </v-card-text>
 
@@ -185,6 +185,14 @@
 
           </v-card>
 
+          <v-pagination
+            v-if="totalPages > 1"
+            v-model="pageUi"
+            :length="totalPages"
+            :total-visible="3"
+            class="my-4"
+          />
+
         </v-card>
       </v-col>
     </v-row>
@@ -201,7 +209,23 @@ import ReviewService from "@/services/ReviewService";
 import {formatDateTime, formatForBackend} from "@/utils/dateFormatter";
 import {EntityType} from "@/types/EntityType";
 
-const cars = ref([]);
+type CarResponseDto = {
+  id: string;
+  manufacturer: string;
+  model: string;
+  bodyType: string;
+  address: string;
+  image?: string;
+  isEcoFriendly?: boolean;
+};
+
+const cars = ref<CarResponseDto[]>([]);
+const totalPages = ref(0);
+const totalElements = ref(0);
+
+const pageUi = ref(1);
+const pageSize = ref(5);
+
 const reviews = ref<Record<string, { content: string; createdAt: string }[]>>({});
 const visibleCommentId = ref<string | null>(null);
 
@@ -232,13 +256,26 @@ const showComments = (carId: string) => {
   visibleCommentId.value = visibleCommentId.value === carId ? null : carId;
 };
 
-watch([startDate, endDate, selectedBodyType, selectedAddress], async ([newStart, newEnd, newBodyType, newAddress]) => {
-  if (newStart && newEnd) {
+watch([startDate, endDate, selectedBodyType, selectedAddress, pageUi], async () => {
+  if (startDate.value && endDate.value) {
     try {
-      const formattedStart = formatForBackend(newStart);
-      const formattedEnd = formatForBackend(newEnd);
+      const formattedStart = formatForBackend(startDate.value);
+      const formattedEnd = formatForBackend(endDate.value);
+      const pageBackend = pageUi.value - 1;
 
-      cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd, newBodyType, newAddress);
+      const pageData = await CarService.getAvailableEcoCars(
+        formattedStart,
+        formattedEnd,
+        pageBackend,
+        pageSize.value,
+        selectedBodyType.value ?? undefined,
+        selectedAddress.value ?? undefined,
+      );
+
+      cars.value = pageData.content;
+      totalPages.value = pageData.totalPages;
+      totalElements.value = pageData.totalElements;
+
       console.log("Fetched available cars:", cars.value);
 
       //Fetch all reviews in parallel
@@ -276,14 +313,29 @@ const reserveCar = async (carId: string) => {
 
     const response = await CarService.reserveCar(carId, formattedStart, formattedEnd);
 
-
     toast.success('Automobilis sekmingai rezervuotas!');
     console.log('Reservation created:', response);
 
-    // Refresh cars
-    cars.value = await CarService.getAvailableEcoCars(formattedStart, formattedEnd, selectedBodyType.value, selectedAddress.value);
+    if (cars.value.length === 1 && pageUi.value > 1) {
+      pageUi.value--;
+    }
 
-  } catch (error) {
+    const pageBackend = pageUi.value - 1;
+
+    const pageData = await CarService.getAvailableEcoCars(
+      formattedStart,
+      formattedEnd,
+      pageBackend,
+      pageSize.value,
+      selectedBodyType.value ?? undefined,
+      selectedAddress.value ?? undefined,
+    );
+
+    cars.value = pageData.content;
+    totalPages.value = pageData.totalPages;
+    totalElements.value = pageData.totalElements;
+
+  } catch (error: any) {
     toast.error('Rezervacijos klaida: ' + (error.response?.data?.message || error.message));
     console.error('Reservation error:', error);
   }
