@@ -1,53 +1,27 @@
-# default
+# Work Tools Booking System – Frontend
 
-## Project setup
+This is the frontend part of the reservation system for booking work equipment, cars and rooms.
 
-```
-# yarn
-yarn
+## Backend
 
-# npm
-npm install
+The backend API for this project is available here:
+https://github.com/artikas1/reservation-system
 
-# pnpm
-pnpm install
+## Features
 
-# bun
-bun install
-```
+- Login & logout
+- Search & filter cars, rooms and equipment
+- Reserve, modify and cancel reservations
+- View reservation history
+- Comments on reservations
+- Admin dashboard for statistics and management
+- Car eco flags
+- Responsive UI for mobile screens
 
-### Compiles and hot-reloads for development
+## Technologies
 
-```
-# yarn
-yarn dev
-
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# bun
-bun run dev
-```
-
-### Compiles and minifies for production
-
-```
-# yarn
-yarn build
-
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# bun
-bun run build
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://vitejs.dev/config/).
+- Vue 3
+- Vite
+- Vuetify
+- TypeScript
+- Axios
